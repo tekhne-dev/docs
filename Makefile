@@ -1,5 +1,5 @@
 help:
-	@echo "Run 'make test' to test locally or 'make build' to render the static site"
+	@echo "Yerel olarak test etmek için 'make test' komutunu, veya siteyi statik olarak oluşturmak için 'make build' komutunu kullanın."
 
 build:
 	mkdocs build
