@@ -1,14 +1,14 @@
-# Asahi Linux dökümantasyon deposu
-Burası [Asahi Linux dökümantasyon](https://asahilinux.org/docs/) deposudur.
+# Asahi Linux dokümantasyon deposu
+Burası [Asahi Linux dokümantasyon](https://asahilinux.org/docs/) deposudur.
 
-## Dökümantasyon yapısı
-Dökümantasyonumuz aşağıdaki kategorilere ayrılmıştır.
+## Dokümantasyon yapısı
+Dokümantasyonumuz aşağıdaki kategorilere ayrılmıştır.
 
-- alt: Alternatif işletim sistemleri ve Linux dağıtımları ile ilgili destek dökümantasyonu buraya eklenmelidir.
-- fw: Üretici tarafından kontrol edilen aygıt yazılımı ve bunların arabirimleri ile ilgili dökümantasyon buraya eklenmelidir.
-- hw: Donanım ile ilgili tüm dökümantasyon buraya eklenmelidir. Bu da aşağıdaki alt kategorilere ayrılmıştır:
-    - cpu: Uygulama işlemcisi ile ilgili dökümantasyon
-    - devices: Belirli Mac modelleri ile ilgili dökümantasyon
+- alt: Alternatif işletim sistemleri ve Linux dağıtımları ile ilgili destek dokümantasyonu buraya eklenmelidir.
+- fw: Üretici tarafından kontrol edilen aygıt yazılımı ve bunların arabirimleri ile ilgili dokümantasyon buraya eklenmelidir.
+- hw: Donanım ile ilgili tüm dokümantasyon buraya eklenmelidir. Bu da aşağıdaki alt kategorilere ayrılmıştır:
+    - cpu: Uygulama işlemcisi ile ilgili dokümantasyon
+    - devices: Belirli Mac modelleri ile ilgili dokümantasyon
     - peripherals: SoC'nin kendisi dışında Apple Silicon Mac'lerde bulunan donanım
     - soc: Apple Silicon SoC'lerle tümleşik donanım blokları
 - platform: Apple Silicon platformunun tamamında geçerli olan belgeler
