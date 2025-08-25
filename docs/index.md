@@ -1,33 +1,22 @@
-Welcome to the Asahi Linux documentation! Here, you will find documentation on the
-Apple Silicon platform as implemented on Mac computers with M-series SoCs. We aim
-to document the platform in a way that is useful for everyone, however our focus is
-supporting third-party operating systems, particularly Linux.
+Asahi Linux dokümentasyonuna hoş geldiniz! Burada, M serisi SoC'lere sahip Mac bilgisayarlarda yer alan Apple Silicon platformu hakkında dokümanlar bulabilirsiniz. Amacımız, platformu herkes için faydalı olacak şekilde kaydetmektir. Ancak odak noktamız, özellikle Linux olmak üzere üçüncü taraf işletim sistemlerini desteklemektir.
 
-We also have documentation on the various pieces of software required to properly
-support this platform, such as m1n1 and U-Boot. Documentation for software that we
-have created (such as m1n1) aims to be as complete as possible. Documentation for
-external projects (such as U-Boot) is limited to how that software is used on the
-Apple Silicon platform.
+Ayrıca, bu platformu düzgün bir şekilde desteklemek için gerekli olan m1n1 ve U-Boot gibi çeşitli yazılımlar hakkında da belgelerimiz bulunmaktadır. Bizim oluşturduğumuz yazılımlar (m1n1 gibi) için belgeler, mümkün olduğunca eksiksiz olmayı amaçlamaktadır. Harici projeler (U-Boot gibi) için belgeler, bahsi geçen yazılımın Apple Silicon platformunda nasıl kullanıldığı ile sınırlıdır.
 
-## Who this documentation is for
-- Operating system and kernel developers looking to implement support for Apple Silicon
-- Folks interested in hacking on and reverse engineering the Apple Silicon platform
-- End users looking for guides and information on supported features
-- Anyone interested in the Asahi Linux project looking for more information
+## Bu dokümantasyon kimler içindir?
+- Apple Silicon desteğini geliştirmek isteyen işletim sistemi ve çekirdek geliştiricileri
+- Apple Silicon platformunu hacklemek ve tersine mühendislik yapmakla ilgilenen kişiler
+- Desteklenen özellikler hakkında kılavuzlar ve bilgiler arayan nihai kullanıcılar
+- Asahi Linux projesiyle ilgilenen ve daha fazla bilgi arayan herkes
 
-Questions? Please check out the [FAQ](project/faq.md) first!
+Sorularınız mı var? Lütfen önce [SSS](project/faq.md) bölümüne bakın!
 
-## Developers
-We have extensive documentation on the platform itself, and the tooling we use to
-reverse engineer and develop Linux drivers for it. Check out the sidebar for places
-to start!
+## Geliştiriciler
+Platformun kendisi ve tersine mühendislik yaparak Linux sürücüleri geliştirmek için kullandığımız araçlar hakkında kapsamlı dokümantasyonumuz var. Başlamak için kenar çubuğuna bakın!
 
-## End Users
-Check out [Feature Support](platform/feature-support/overview.md) for supported devices
-and features. If you're after documentation on something specific, use the search feature
-at the top of the page or check out the sidebar for places to start!
+## Nihai Kullanıcılar
+Desteklenen cihazlar ve özellikler için [Özellik Desteği](platform/feature-support/overview.md) bölümüne göz atın. Belirli bir konu hakkında dokümantasyon arıyorsanız, sayfanın üst kısmındaki arama özelliğini kullanın ya da başlangıç noktası olarak kenar çubuğuna göz atın!
 
-## Latest Asahi Linux blog posts
+## En Son Asahi Linux Blog Yazıları
 * [Beyond Gaming: X11 bridging in muvm](https://asahilinux.org/2024/12/muvm-x11-bridging/)
 * [AAA gaming on Asahi Linux](https://asahilinux.org/2024/10/aaa-gaming-on-asahi-linux/)
 * [Vulkan 1.3 on the M1 in 1 month](https://asahilinux.org/2024/06/vk13-on-the-m1-in-1-month/)
