@@ -1,192 +1,88 @@
 ---
-title: Asahi Linux Distribution Guidelines
+title: Asahi Linux Dağıtım Yönergeleri
 ---
 
-Asahi Linux exists to reverse engineer, document, and ultimately
-implement Linux support for the Apple Silicon platform. While
-[Fedora Asahi Remix](https://fedora-asahi-remix.org) is our flagship distribution, representing the
-state of the art of Linux support on Apple Silicon, we have always
-encouraged interested parties representing other distributions
-(and even other FLOSS operating systems like [OpenBSD](https://www.openbsd.org/)) to implement
-support for the platform.
+Asahi Linux, Apple Silicon platformu için Linux desteğini tersine mühendislik ile geliştirmek, belgelemek ve nihayetinde hayata geçirmek amacıyla kurulmuştur. [Fedora Asahi Remix](https://fedora-asahi-remix.org) bizim en gelişmiş dağıtımımız olup, Apple Silicon üzerinde Linux desteğinin en son teknolojisini temsil etmektedir. Bununla birlikte, biz her zaman diğer dağıtımları temsil eden tarafları (ve hatta [OpenBSD](https:/www.openbsd.org/) gibi diğer FLOSS (Özgür ve Açık Kaynaklı Yazılım) işletim sistemlerini) bu platformu desteklemeleri için teşvik ettik.
 
-Traditionally, it has been unclear whether or not these efforts
-are officially endorsed by the Asahi Linux project. This has led
-to frustration and confusion on the part of users, distro maintainers,
-and Asahi developers alike. Some distros have been semi-integrated
-into the project on account of being the distro of choice of
-our developers, while others are listed as "supported" in our
-documentation despite being drive-by attempts at support led
-by a single person who has long since given up.
+Eskiden bu girişimlerin Asahi Linux projesi tarafından resmi olarak onaylanıp onaylanmadığı belirsizdi. Bu durum, kullanıcılar, dağıtım yöneticileri ve Asahi geliştiricileri arasında hayal kırıklığı ve kafa karışıklığına yol açtı. Bazı dağıtımlar, geliştiricilerimizin tercih ettiği dağıtımlar oldukları için projeye yarı tümleşik hale getirilmişken, diğerleri ise, uzun zaman önce projeden vazgeçmiş tek bir kişinin yönettiği geçici destek girişimleri olmalarına rağmen belgelerimizde “destekleniyor” olarak listelenmiştir.
 
-To remedy this situation, we have compiled a set of guidelines
-for distros looking to implement support for Apple Silicon. We
-heavily encourage all distributions to strive toward them in the
-interests of a consistently good experience for all Apple Silicon
-users regardless of their distribution of choice.
+Bu durumu düzeltmek için, Apple Silicon desteğini hayata geçirmek isteyen dağıtımlar için bir dizi yönerge hazırladık. Tüm dağıtımların, tercih ettikleri dağıtımdan bağımsız olarak tüm Apple Silicon kullanıcıları için tutarlı bir şekilde iyi bir deneyim sağlamak amacıyla bu kılavuzlara uymalarını kuvvetle tavsiye ediyoruz.
 
-These criteria are entirely optional. Everyone is of course
-welcome to experiment with and enjoy their favourite distribution
-on the Apple Silicon platform, and we will always enable and
-encourage this. These guidelines are aimed at mature/mainstream
-distributions interested in supporting Apple Silicon in an
-official or semi-official capacity. Distros which demonstrate
-adherence to these guidelines will be eligible for listing in
-our documentation as viable alternatives to Fedora Asahi Remix.
+Bu kriterler tamamen isteğe bağlıdır. Elbette herkesin Apple Silicon platformunda en sevdiği dağıtımı denemesi ve keyfini çıkarmasını memnuniyetle karşılıyoruz ve bunu her zaman destekleyeceğiz. Bu kılavuzlar, Apple Silicon'u resmi veya yarı resmi olarak desteklemek isteyen olgun/ana akım dağıtımlara yöneliktir. Bu kılavuzlara uyduğunu gösteren dağıtımlar, Fedora Asahi Remix'e alternatif olarak belgelerimizde listelenmeye hak kazanacaktır.
 
-## Required reading
-Please familiarise yourself with the [Introduction to Apple Silicon](../platform/introduction.md),
-[Open OS Platform Integration](../platform/open-os-interop.md),
-and [Boot Process Guide](boot-process-guide.md) documents before continuing.
+## Okunması gerekenler
+Devam etmeden önce [Apple Silicon'a Giriş](../platform/introduction.md), [Open OS Platform Tümleştirmesi](../platform/open-os-interop.md) ve [Önyükleme Süreci Kılavuzu](boot-process-guide.md) belgelerini inceleyin.
 
-## Official buy-in
-Your project to implement Apple Silicon support in your distro of
-choice must be directly supported - or otherwise acknowledged - by
-your distro's official maintainers. This may vary depending on your
-distro's policy and organisational structure, however typically this
-will take the form of an official taskforce/group endorsed by the
-distro, e.g. the [Fedora Asahi SIG](https://fedoraproject.org/wiki/SIGs/Asahi),
-[Gentoo Asahi Project](https://wiki.gentoo.org/wiki/Project:Asahi), or Debian's
-[Team Bananas](https://wiki.debian.org/Teams/Bananas).
+## Resmi destek
+Seçtiğiniz dağıtımda Apple Silicon desteğini uygulamaya yönelik projeniz, dağıtımın resmi sorumluları tarafından doğrudan desteklenmeli veya onaylanmalıdır. Bu, dağıtımınızın politikasına ve organizasyon yapısına göre değişebilir, ancak genellikle dağıtım tarafından onaylanan resmi bir çalışma grubu/kurumunun oluşturulması şeklinde olur. Örneğin [Fedora Asahi SIG](https://fedoraproject.org/wiki/SIGs/Asahi), [Gentoo Asahi Project](https://wiki.gentoo.org/wiki/Project:Asahi) veya Debian'ın [Team Bananas'ı](https://wiki.debian.org/Teams/Bananas) gibi.
 
-## Complete and up to date packages
-You must have the following list of packages present in your distro.
-Preferably, these will be in official package repositories. However,
-it is acceptable for them to be in a third-party repository (e.g.
-Fedora COPR, Portage Overlay) provided that your repository has been
-endorsed by your distro's official maintainers.
+## Eksiksiz ve güncel paketler
+Dağıtımınızda aşağıdaki paketlerin bulunması gerekir. Tercihen, bunlar resmi paket depolarında bulunmalıdır. Ancak, dağıtımınızın resmi sorumluları tarafından onaylanmış olması koşuluyla, bunların üçüncü taraf depolarında (ör. Fedora COPR, Portage Overlay) bulunması da kabul edilebilir.
 
-* [The Asahi Linux fork of the Linux kernel](https://github.com/AsahiLinux/linux)
+* [Linux Kernel'inin Asahi Linux fork'u](https://github.com/AsahiLinux/linux)
 * [m1n1](https://github.com/AsahiLinux/m1n1)
-* [The Asahi Linux fork of Das U-Boot](https://github.com/AsahiLinux/u-boot)
-* [asahi-scripts](https://github.com/AsahiLinux/asahi-scripts) or equivalent configuration presets/scripts
+* [Das U-Boot'un Asahi Linux fork'u](https://github.com/AsahiLinux/u-boot)
+* [asahi-scripts](https://github.com/AsahiLinux/asahi-scripts) veya eşdeğer ön ayar/kod dizileri
 * [tiny-dfr](https://github.com/AsahiLinux/tiny-dfr)
-* [asahi-firmware](https://github.com/AsahiLinux/asahi-installer) (including its dependency lzfse)
+* [asahi-firmware](https://github.com/AsahiLinux/asahi-installer) (gereksinimi olan lzfse dahil)
 * [speakersafetyd](https://github.com/AsahiLinux/speakersafetyd)
-* [asahi-audio](https://github.com/AsahiLinux/asahi-audio) (and its LV2 plugin dependencies)
+* [asahi-audio](https://github.com/AsahiLinux/asahi-audio) (LV2 plugin gereksinimleri dahil)
 
-New versions of the above software must be packaged in your
-distro's bleeding edge (e.g. Fedora Rawhide or Gentoo's
-unstable package stream) within 2 weeks of becoming available upstream.
+Yukarıdaki yazılımların yeni sürümleri, yukarı akışta kullanıma sunulduktan sonra 2 hafta içinde dağıtımınızın en yeni sürümünde (örneğin Fedora Rawhide veya Gentoo'nun değişken paket akışında) paketlenmelidir.
 
-## Installation procedure
-Asahi Linux uses Das U-Boot's UEFI environment to chainload standard UEFI
-bootloaders, such as GRUB and systemd-boot. The Asahi Installer is capable
-of setting up a minimal UEFI-only environment capable of booting UEFI
-executables on removable media. This provides users an installation
-experience that is almost identical to a standard amd64-based workstation.
-Building Apple Silicon support into your distro's existing AArch64 bootable
-media (e.g. via a secondary Asahi kernel selectable at the UEFI bootloader)
-allows the reuse of all your distro's existing upstream AArch64 resources,
-and negates the need to fork the Asahi Installer.
+## Kurulum Süreci
+Asahi Linux, Das U-Boot'un UEFI ortamını kullanarak GRUB ve systemd-boot gibi standart UEFI önyükleyicileri zincirleme olarak yüklemektedir. Asahi Yükleyicisi (Asahi Installer), çıkarılabilir belleklerde UEFI çalıştırabilir dosyalarını önyükleyebilen minimal bir UEFI ortamı kurabilir. Bu, kullanıcılara standart amd64 tabanlı bir iş istasyonuyla neredeyse aynı kurulum deneyimini sunar. Dağıtımınızın mevcut AArch64 önyüklenebilir belleğine Apple Silicon desteği eklemek (örneğin, UEFI önyükleyicide seçilebilen ikincil bir Asahi kernel aracılığıyla), dağıtımınızın mevcut tüm AArch64 kaynaklarının yeniden kullanılmasını sağlar ve Asahi Yükleyicisi'ni fork etme ihtiyacını ortadan kaldırır.
 
-When selecting the minimal UEFI environment installation option, the Asahi
-Installer can be directed to create free space for a future root filesystem.
-Your guide must instruct users to use this facility to prepare their disk
-for your distribution rather than attempting to manually shrink or alter
-APFS containers via your installer.
+Minimal UEFI ile kurulum seçeneği seçildiğinde, Asahi Yükleyicisi gelecekteki root dosya sistemi için boş alan yaratacak şekilde yönlendirilebilir. Kılavuzunuzda, kullanıcıların yükleyiciniz aracılığıyla APFS konteynerlerini elle küçültmeye veya değiştirmeye çalışmak yerine, dağıtımınız için disklerini hazırlamak üzere bu özelliği kullanmaları gerektiği belirtilmelidir.
 
-Your installation process should be as close to your distro's standard
-installation procedure as possible. If your distro has an officially endorsed
-automatic installer (e.g. Anaconda), then it must be used. If your
-distro follows a manual guided installation (e.g. Gentoo Handbook), then
-you must have a clear and easy to follow guide specific to Apple Silicon.
-You must not instruct your users to materially deviate from your distro's
-prescribed official installation procedure. 
+Yükleme işleminiz, dağıtımınızın standart yükleme sürecine mümkün olduğunca yakın olmalıdır. Dağıtımınızın resmi olarak onaylanmış bir otomatik yükleyicisi varsa (ör. Anaconda), bu yükleyici kullanılmalıdır. Dağıtımınız manuel kılavuzlu kurulum yöntemini kullanıyorsa (ör. Gentoo El Kitabı), Apple Silicon'a özel, açık ve takip etmesi kolay bir kılavuzunuz olmalıdır. Kullanıcılarınıza, dağıtımınızın öngördüğü resmi kurulum prosedüründen önemli ölçüde sapmalar yapmalarını söylememelisiniz.
 
-If your installer attempts to partition the user's disk automatically, then
-you _should_ explicitly warn your users against making use of it if it cannot
-be made to ignore APFS containers. Altering or destroying any of the
-on-disk APFS containers will require your users to DFU restore their Mac.
+Yükleyiciniz kullanıcının diskini otomatik olarak bölümlemeye çalışırsa ve APFS kapsayıcılarını yok sayması mümkün değilse, kullanıcılarınızı bunu kullanmamaları konusunda açıkça uyarmalısınız. Diskteki APFS kapsayıcılarından herhangi birini değiştirmek veya yok etmek, kullanıcılarınızın Mac'lerini DFU ile geri yüklemelerini gerektirecektir.
 
-Instead, your installation procedure _must_ encourage manual partitioning,
-with a section in your guide explaining the dangers of carelessly altering
-the partition table. Users must be made aware that it is _never_ safe to
-alter or rearrange _any_ disk structure other than the free space left by
-the Asahi Installer.
+Bunun yerine, kurulum süreciniz elle bölümlemeyi teşvik etmelidir ve kılavuzunuzda disk bölümlendirme tablosunu dikkatsizce değiştirmenin tehlikelerini açıklayan bir bölüm bulunmalıdır. Kullanıcılar, Asahi Yükleyicisi tarafından bırakılan boş alan dışında _herhangi_ bir disk yapılandırmasını değiştirme veya yeniden düzenleme işlemlerinin _asla_ güvenli olmadığı hakkında bilgilendirmelidir.
 
-_Note: We are actively working on improving the safety of common disk partitioning
-and installation tooling. We may tighten these requirements in the future as
-tools such as cfdisk, blivet, Anaconda, etc. become capable of automatically
-handling Apple Silicon devices safely._
+_Not: Sık kullanılan disk bölümlendirme ve kurulum araçlarının güvenliğini iyileştirmek için aktif olarak çalışıyoruz. cfdisk, blivet, Anaconda vb. araçlar Apple Silicon cihazlarını otomatik olarak güvenli bir şekilde yönetebilecek hale geldikçe, gelecekte bu gereksinimleri daha da sıkılaştırabiliriz._
 
-Your installation must install the Asahi-specific packages listed above as
-part of the installation procedure, or a subset suitable for the installation
-type. For example, server operating systems may choose to forego automatically
-installing the audio enablement packages.
+Kurulumunuz, kurulum sürecinin bir parçası olarak yukarıda listelenen Asahi'ye özgü paketleri veya kurulum türüne uygun bir alt kümeyi yüklemelidir. Örneğin, sunucu işletim sistemleri ses etkinleştirme paketlerini otomatik olarak yüklemekten vazgeçebilir.
 
-## Infrastructure and hosting
-You or your distro will assume all responsibility for any required hosting
-or infrastructure other than the Asahi Installer. This includes any
-documentation, packages, CI runners to build packages, CDNs etc. The Asahi
-Linux project cannot do this for you.
+## Altyapı ve hosting
+Asahi Installer dışında gerekli olan tüm hosting
+veya altyapı sorumluluğu size veya dağıtımınıza aittir. Buna dokümentasyon, paketler, paketleri oluşturmak için CI çalıştırıcıları, CDN'ler vb. dahildir. Asahi Linux projesi bunu sizin için yapamaz.
 
-## Support
-Your distro must have first-class, mature support for AArch64/ARM64 upstream.
+## Destek
+Dağıtımınız, AArch64/ARM64 upstream için birinci sınıf, olgun bir desteğe sahip olmalıdır.
 
-You or your distro will provide official support for distro-specific issues
-relating to the Apple Silicon platform. This includes acting as the first
-point of contact for users when they encounter bugs or other issues with any
-packaged software. Apple Silicon should be a first-class platform within your
-distro's broader AArch64/ARM64 support.
+Siz veya dağıtımınız, Apple Silicon platformuyla ilgili dağıtımınız özelindeki sorunlar için resmi destek sağlayacaktır. Bu, kullanıcıların herhangi bir paketlenmiş yazılımda hata veya başka sorunlarla karşılaştıklarında ilk başvuru noktası olarak hareket etmeyi de içerir. Apple Silicon, dağıtımınızın daha geniş AArch64/ARM64 desteği içinde birinci sınıf bir platform olmalıdır.
 
-## Using a forked installer and disk image
-There are two supported mechanisms for installing Linux on Apple Silicon Macs.
-As an alternative to the standard UEFI media method described above, the Asahi
-Installer can free space on the NVMe drive and then flash a prebuilt OS image
-into that space. This mimics other AArch64 embedded platforms, such as the
-Raspberry Pi, and provides a way for users not familiar or confident with
-installing Linux an easy way to get started at the expense of customisability.
-For more details on how this works, please see [AsahiLinux/asahi-installer](https://github.com/AsahiLinux/asahi-installer).
+## Forklanmış yükleyici ve disk imajı kullanma
+Apple Silicon Mac'lere Linux yüklemek için desteklenen iki mekanizma vardır. Yukarıda açıklanan standart UEFI medya yöntemine alternatif olarak, Asahi Installer NVMe sürücüsünde yer açabilir ve ardından önceden oluşturulmuş bir işletim sistemi imajını bu alana yükleyebilir. Bu, Raspberry Pi gibi diğer AArch64 gömülü platformları taklit eder ve Linux yüklemeye aşina olmayan veya bu konuda kendine güvenmeyen kullanıcılara, özelleştirilebilirlikten ödün vererek kolay bir başlangıç yolu sunar. Bunun nasıl çalıştığına dair daha fazla ayrıntı için lütfen [AsahiLinux/asahi-installer](https://github.com AsahiLinux/asahi-installer) sayfasına bakın.
 
-We expect distros to fork, modify, and host the reference Asahi Installer themselves
-if choosing to go down this route. We cannot host your images or make distro-specific
-changes to our reference installer.
+Bu yolu seçmeyi tercih eden dağıtımların, referans Asahi Yükleyiciyi kendileri forklamalarını, değiştirmelerini ve internet sitelerinde sunmalarını bekliyoruz. İmajlarınızı biz sitemizde sunamayız veya referans yükleyicimizde dağıtımlara özgü değişiklikler yapamayız.
 
-Your disk image based installation should follow these guidelines:
+Disk imajı tabanlı kurulumunuz şu yönergeleri izlemelidir:
 
-* The installer and disk images are built and hosted by the distro officially
-* The disk images are ZIPped and streamable from the Web
-* The OS scrambles the root partition's UUID on first boot
-* The OS grows its root partition into trailing free space on first boot
-* The disk image includes all Asahi-specific packages
-* All supported hardware is enabled and working from the first boot
-* Disk images are reasonably up to date
-* The install flow for all images is tested before release
-* All disk images are thoroughly tested on multiple devices before release
+* Yükleyici ve disk imajları resmi olarak dağıtım tarafından oluşturulur ve host edilir  
+* Disk imajları ZIP formatında paketlenir ve internet üzerinden akış olarak indirilebilir
+* İşletim sistemi, ilk açılışta root bölümünün UUID'sini karıştırır 
+* İşletim sistemi, ilk açılışta root bölümünü artan boş alana doğru genişletir
+* Disk imajı, Asahi'ye özgü tüm paketleri içerir
+* Desteklenen tüm donanımlar, ilk açılıştan itibaren etkinleştirilir ve çalışır
+* Disk imajları olabildiğince günceldir
+* Tüm imajlar için yükleme süreci, yayınlanmadan önce test edilir
+* Tüm disk imajları, yayınlanmadan önce birden fazla cihazda kapsamlı bir şekilde test edilir
 
-It should be noted that the disk image installation flow is a curiosity of early
-bringup work that ended up sticking. While this installation method has its advantages,
-it is not the way forward for workstation-class hardware and contributes to the stigma
-of AArch64 devices being janky developers' toys. We heavily encourage distros
-to invest time in building AArch64 bootable media with Apple Silicon support,
-and leverage the reference installer's minimal UEFI environment. As mentioned above,
-this aligns closer with user expectations and 40 years of precedence when dealing with
-workstation-grade hardware.
+Disk imajı kurulum sürecinin, erken aşamadaki çalışmaların bir sonucu olarak ortaya çıkan ve sonunda kalıcı hale gelen bir özellik olduğu unutulmamalıdır. Bu kurulum yönteminin avantajları olsa da, iş istasyonu sınıfı donanımlar için ileriye dönük bir çözüm değildir ve AArch64 cihazlarının tuhaf geliştiricilerin oyuncakları olarak görülmesine katkıda bulunur. Dağıtımların, Apple Silicon desteğine sahip AArch64 önyüklenebilir bellek oluşturmaya zaman ayırmalarını ve referans yükleyicinin minimal UEFI ortamından yararlanmalarını şiddetle tavsiye ediyoruz. Yukarıda belirtildiği gibi, bu, iş istasyonu sınıfı donanımlarla çalışırken kullanıcı beklentilerine ve 40 yıllık teamüllere daha yakındır.
 
-We are actively working on improving the tooling required to make bootable media installs
-safer for users. Once we consider mainstream disk partitioning software and live media
-installation tooling sufficiently foolproof on Apple Silicon devices, we _may_ reconsider
-the need to support the image-based installation flow going forward.
+Kullanıcılar için önyüklenebilir bellek kurulumlarını daha güvenli hale getirmek için gerekli araçları iyileştirmek üzere aktif olarak çalışıyoruz. Ana akım disk bölümleme yazılımı ve canlı bellek yükleme araçlarının Apple Silicon cihazlarda yeterince hatasız olduğunu düşündüğümüzde, imaj tabanlı yükleme akışını destekleme ihtiyacını yeniden gözden geçirebiliriz.
 
-## Disendorsement
-Through diligent QA and attention to detail, Asahi Linux has
-become well-regarded as one of the best desktop Linux experiences available.
-This is a great source of pride for us, and we are determined to meet the high
-user expectations that come with such a reputation. We expect officially
-endorsed distros to strive to meet those same expectations.
+## Onayın Geri Çekilmesi
+Titiz kalite kontrolümüz ve detaylara gösterdiğimiz özenimiz sayesinde, Asahi Linux günümüzün en iyi masaüstü Linux deneyimlerinden biri olarak kabul görmüştür. Bu bizim için büyük bir gurur kaynağıdır ve bu saygınlığın getirdiği yüksek kullanıcı beklentilerini karşılamaya kararlıyız. Resmi olarak onaylanmış dağıtımların da aynı beklentileri karşılamaya çalışmasını bekliyoruz.
 
-We hope that it will never be necessary to do so, but we may be required to
-disendorse distros that are not meeting user or Asahi Linux expectations.
-Disendorsed distros will be delisted from our documentation. Depending on the
-circumstances, we may also discourage use of the disendorsed distro.
+Bunu yapmak zorunda kalmamayı umuyoruz, ancak kullanıcıların veya Asahi Linux'un beklentilerini karşılamayan dağıtımların onayını geri çekmemiz gerekebilir. Onayı geri çekilen dağıtımlar, dokümantasyonumuzdan kaldırılacaktır. Koşullara bağlı olarak, onayı geri çekilen dağıtımın kullanımını dahi önermeyebiliriz.
 
-Reasons for disendorsement may include:
+Onayın geri çekilmesinin nedenleri şunlar olabilir:
 
-* A lack of official distro support for the Apple Silicon platform
-* Frequent or recurring distro-specific issues that cannot be reproduced
-  on Fedora Asahi Remix, especially if such issues are not addressed in
-  a timely fashion
-* Repeated failure to keep Asahi packages current
-* Failure to keep installer disk images current (if image-based installation is offered)
-
+* Apple Silicon platformu için resmi dağıtım desteğinin olmaması
+* Fedora Asahi Remix'te yeniden üretilemeyen, özellikle de bu tür sorunlar zamanında çözülmediğinde sık sık veya tekrar tekrar ortaya çıkan dağıtım kaynaklı sorunlar 
+* Asahi paketlerinin güncel tutulmasında mükerrer başarısızlık 
+* Yükleyici disk imajlarının güncel tutulmasında başarısızlık (imaj tabanlı yükleme sunuluyorsa)
