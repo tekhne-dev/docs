@@ -1,67 +1,67 @@
 ---
-title: Asahi Boot Process
+title: Asahi Önyükleme Süreci
 summary:
-  How Asahi Linux boots on Apple Silicon Macs, intended for
-  distro/OS integrators
+  Asahi Linux'un Apple Silicon Mac'lerde nasıl önyüklendiğini
+  anlatır. Dağıtım/işletim sistemi tümleştiricileri içindir.
 ---
 
-This page explains the packages/components involved in a bootable Asahi Linux system, and how they interact with each other. It is aimed at distro packagers and people who want to roll/maintain their own builds instead of using packages. It is based on the setup used in the Arch Linux ARM-based reference distro, but should apply to most systems.
+Bu sayfa, önyüklenebilir bir Asahi Linux sisteminde yer alan paketleri/bileşenleri ve bunların birbirleriyle nasıl etkileşime girdiğini açıklamaktadır. Bu sayfa, dağıtım paketleyicileri ve paketleri kullanmak yerine kendi derlemelerini oluşturmak/bakımını yapmak isteyen kişilere yöneliktir. Arch Linux ARM tabanlı referans dağıtımında kullanılan kurulum temel alınarak hazırlanmıştır, fakat çoğu sistemde uygulanabilir.
 
-This is a practical guide. For a more formal description/spec, including how we handle vendor firmware, see [Open OS Ecosystem on Apple Silicon Macs](../platform/open-os-interop.md). For information about specifically how everything is plumbed in Fedora Asahi Remix, see its [How it's made](https://docs.fedoraproject.org/en-US/fedora-asahi-remix/how-its-made/) page.
+Bu uygulamaya açık bir rehberdir. Üretici yazılımını nasıl ele aldığımız da dahil olmak üzere daha resmi bir açıklama veya teknik özellikler için [Apple Silicon Mac'lerde Açık İşletim Sistemleri Ekosistemi](../platform/open-os-interop.md) bölümüne bakın. Fedora Asahi Remix'te her şeyin nasıl çalıştığına dair ayrıntılı bilgi için, [Nasıl Yapılır](https://docs.fedoraproject.org/en-US/fedora-asahi-remix/how-its-made/) sayfasına bakın.
 
-## Boot chain overview
+## Önyükleme zincirine genel bakış
 
-[Apple stuff] → m1n1 stage 1 → m1n1 stage 2 → DT + U-Boot → GRUB → Linux
+[Apple'ın aşamaları] → m1n1 aşama 1 → m1n1 aşama 2 → DT + U-Boot → GRUB → Linux
 
-m1n1 stage 1 is installed by the Asahi Linux installer from recovery mode (in step2.sh), is signed by an internal machine-specific key in the process (as part of Apple's secure boot policy), and can be considered immutable. Upgrading it should seldom be needed, we'll make tooling for this when it becomes necessary. It has the PARTUUID of the EFI system partition assigned to this OS hardcoded into it (set at install time), and chainloads m1n1 stage 2 from `<ESP>/m1n1/boot.bin` (the ESP must be in internal NVMe storage, no external storage is supported). It also passes through this PARTUUID to the next stage (as a to-be-set /chosen property, see below), so the next stage knows what partition it's booting from.
+m1n1 aşama 1, kurtarma modundayken (step2.sh dosyasında) Asahi Linux yükleyicisi tarafından kurulur, bu süreçte (Apple'ın güvenli önyükleme kuralının bir parçası olarak) makineye özgü bir iç anahtarla imzalanır ve değişmez olarak kabul edilebilir. Bunu yükseltmeye nadiren ihtiyaç duyulacaktır. Biz de gerektiğinde bunun için araçlar geliştireceğiz. Bu işletim sistemine atanan EFI sistem bölümünün PARTUUID'si (yükleme sırasında ayarlanan) sabit olarak kodlanmıştır ve m1n1 aşama 2'yi `<ESP>/m1n1/boot.bin` adresinden zincirlemesine yükler (ESP, dahili NVMe depolama alanında olmalıdır, harici depolama desteklenmemektedir). Ayrıca bu PARTUUID'yi bir sonraki aşamaya aktarır (‘ayarlanacak/seçilecek bir özellik’ olarak; aşağıya bakınız), böylece bir sonraki aşama hangi disk bölümünden önyükleme yapıldığını bilir.
 
-An OS/distribution is in charge of maintaining and upgrading the rest of the boot components.
+Geri kalan önyükleme bileşenlerinin bakımı ve yükseltilmesinden işletim sistemi/dağıtım sorumludur.
 
-m1n1 stage 2 is in charge of initializing (more) hardware, choosing the appropriate DT for this platform, filling in dynamic properties, and loading U-Boot.
+m1n1 aşama 2, daha fazla donanımı başlatmak, bu platform için uygun DT'yi seçmek, dinamik özellikleri eklemek ve U-Boot'u yüklemekle sorumludur.
 
-U-Boot initializes more things (e.g. keyboard, USB), provides UEFI services, and (by default, in our release configuration) loads a UEFI binary from `<ESP>/EFI/BOOT/BOOTAA64.EFI`, honoring the magic. Note that U-Boot both consumes, slightly modifies*, and forwards on the DT.
+U-Boot da daha fazla şeyi başlatır (ör. klavye, USB), UEFI hizmetleri sağlar ve (varsayılan olarak, yayınlanan yapılandırmamızda) `<ESP>/EFI/BOOT/BOOTAA64.EFI` konumundan bir UEFI ikili dosyasını yükler, böylelikle sihirli değeri (magic) korur. U-Boot'un DT'yi hem kullandığını, hem de hafifçe değiştirdiğini* ve yönlendirdiğini unutmayın.
 
-GRUB is vanilla, nothing special there. You could use any other arm64 EFI binary.
+GRUB tamamen standarttır, hiçbir özelliği yoktur. Başka herhangi bir arm64 EFI ikili dosyasını da kullanabilirsiniz.
 
-\* Largely just setting the stdout-path based on whether it thinks you should be using a physical/keyboard console or a UART console.
+\* Büyük ölçüde, fiziksel/klavye konsolu mu yoksa UART konsolu mu kullanmanız gerektiğini düşünerek stdout yolunu ayarlamaktadır.
 
-### The magic ESP stuff
+### Sihirli ESP özellikleri
 
-For Asahi we have a non-standard setup where each OS install has its own EFI system partition. This makes it easier to fit in with Apple's boot picker model, since it knows nothing about EFI; from its point of view, each Asahi instance installed is its own separate OS, and therefore downstream we use a separate ESP for each. Nothing stops you from installing multiple bootloaders or OSes within one such container/ESP, but:
+Asahi için, her işletim sistemi kurulumunun kendi EFI sistem bölümüne sahip olduğu standart dışı bir yapılandırmamız var. Bu, Apple'ın önyükleme seçici modeline uyum sağlamayı kolaylaştırmaktadır, çünkü Apple EFI hakkında bir şey bilmemektedir. Apple'ın bakış açısından, kurulan her Asahi örneği kendi ayrı işletim sistemidir ve bu nedenle ilerleyen kısımlarda her biri için ayrı bir ESP kullanıyoruz. Böyle bir konteyner/ESP içinde birden fazla önyükleyici veya işletim sistemi kurmanızı engelleyen hiçbir şey yoktur, ancak:
 
-* We suspect this will cause pain in the future once we start integrating with security-related platform features (e.g. SEP), since it might have a concept of "currently booted OS identity".
-* Since there can only be one set of DTs, U-Boot, and m1n1 stage 2 version per container/ESP, there is no sane way for multiple distros to cooperate to manage updates if they share one container.
-* We don't have persistent EFI variable storage (and no good idea for how to do it in runtime services), which means there's no way to manage the EFI boot order. So you end up with the default only.
+* Güvenlikle ilgili platform özellikleriyle (ör. SEP) bütünleşmeye başladığımızda, bunun gelecekte sorunlara yol açacağından şüpheleniyoruz. Zira “şu anda önyüklü işletim sistemi kimliği” gibi bir kavram söz konusu olabilir.
+* Her konteyner/ESP için yalnızca bir DT, U-Boot ve m1n1 aşama 2 sürümü olabileceğinden, birden fazla dağıtım bir konteyneri paylaşıyorsa, güncellemeleri yönetmek için işbirliği yapmanın makul bir yolu yoktur.
+* Kalıcı EFI değişkeni depolama birimimiz yok (ve bunu runtime hizmetlerinde nasıl yapacağımıza dair iyi bir fikrimiz de yok), bu da EFI önyükleme sırasını yönetmenin bir yolu olmadığı anlamına geliyor. Dolayısıyla, yalnızca varsayılanla yetinmek zorunda kalıyorsunuz.
 
-Thus, if you're adding distro support for end-users, please stick to this model. An exception is USB-bootable rescue/installer images, which should be bootable by the vanilla m1n1.bin bundle that the Asahi Linux installer installs in plain UEFI container mode, from their own ESP on the USB drive containing `/EFI/BOOT/BOOTAA64.EFI` (no `m1n1/boot.bin`). Those should never try to manage the `boot.bin` in the internal ESP themselves (until/unless installed proper, thus becoming the owners of that container), and hopefully the DT situation will work out for the USB boot.
+Bu nedenle, nihai kullanıcılar için dağıtım desteği ekliyorsanız, lütfen bu modele sadık kalın. Bir istisna, USB önyüklenebilir kurtarma/yükleyici imajlarıdır. Bunlar, Asahi Linux yükleyicisinin düz UEFI konteyner modunda yüklediği vanilla m1n1.bin paketi ile, `/EFI/BOOT/BOOTAA64.EFI` (`m1n1/boot.bin` yok) içeren USB sürücüsündeki kendi ESP'lerinden önyüklenebilir olmalıdır. Bunlar, dahili ESP'deki `boot.bin` dosyasını asla kendileri yönetmeye çalışmamalıdır (uygun şekilde yüklenmedikçe ve bu şekilde o konteynerin sahibi olmadıkça). Umarız DT durumu USB önyükleme için uygun hale gelir.
 
-The PARTUUID of the EFI system partition assigned to the currently booted OS is set by m1n1 as the `asahi,efi-system-partition` property of the `/chosen` device tree node, which can be read from Linux at `/proc/device-tree/chosen/asahi,efi-system-partition`. Our U-Boot branch also uses this to find the right ESP.
+Şu anda önyüklenen işletim sistemine atanan EFI sistem bölümünün PARTUUID'si, m1n1 tarafından `/chosen` aygıt ağacı nodunun `asahi,efi-system-partition` özelliği olarak ayarlanır ve Linux'ta `/proc/device-tree/chosen/asahi,efi-system-partition` adresinden okunabilir. U-Boot branch'imiz de doğru ESP'yi bulmak için bunu kullanır.
 
-## Version interactions
+## Sürüm etkileşimleri
 
-Here's where it gets a bit hairy. m1n1, u-boot, Linux, and the device trees have somewhat complex and subtle version interdependencies.
+İşte burada işler biraz karışmaktadır. m1n1, u-boot, Linux ve aygıt ağaçları arasında biraz karmaşık ve incelikli sürüm bağıntıları bulunmaktadır.
 
-* m1n1 stage 2 is in charge of some hardware init, and patching in dynamic values into the device trees. This means that newer kernel hardware support often depends on a m1n1 update, either to initialize things or to add more device tree data, or both.
-    * In general, we prefer to keep Linux drivers simple and put "magic" init (e.g. random magic sets of register writes, which Apple loves to describe in their variant of a DT) in m1n1. Same with things related to the memory controller, clock configurations that we can reasonably leave static, etc. The exception is when Linux has no choice but to do this dynamically at runtime. Apple likes to leave way too much to the XNU kernel (which m1n1 replaces), including ridiculous things like turning on the system-level L3 cache, and we don't want Linux to have to deal with that. This also highly increases our chances of existing kernels working (at least partially) on newer SoCs/platforms with only DT changes, which is good for e.g. forward-compatibility of distro install images. For example, PCIe on M2 required no driver-level changes, only changes to the m1n1 initialization.
-* U-Boot generally doesn't change much once properly brought up on any given SoC, and only cares about a subset of DT info.
-* Linux needs DT data to bring up hardware, so new hardware needs DT updates. Our canonical DT repository is part of our Linux tree itself, but remember changes here often need m1n1 (stage 2) updates to make things actually work.
+ * m1n1 aşama 2, bazı donanım başlatma işlemlerinden ve aygıt ağaçlarına değişken değerlerin girilmesinden sorumludur. Bu, yeni kernel donanım desteğinin genellikle bir şeyleri başlatmak, daha fazla aygıt ağacı verisi eklemek ya da her ikisini birden yapmak için m1n1 güncellemelerine bağlı olduğu anlamına gelir.
+    * Genel olarak, Linux sürücülerini basit tutmayı ve “sihirli” init'i (örneğin, Apple'ın bir DT türevinde tanımlamayı sevdiği rastgele sihirli kayıt yazma kümeleri) m1n1'de tutmayı tercih ediyoruz. Bellek denetleyicisiyle ilgili şeyler, makul olarak statik bırakabileceğimiz hız yapılandırmaları vb. için de aynı şey geçerlidir. İstisna, Linux'un bunu çalışma zamanında dinamik olarak yapmak zorunda kaldığı durumlardır. Apple, sistem düzeyinde L3 önbelleği açmak gibi saçmalıklar da dahil olmak üzere, çok fazla şeyi XNU çekirdeğine (m1n1'in yerini aldığı) bırakmayı sevse de biz Linux'un bununla uğraşmasını istemiyoruz. Bu aynı zamanda mevcut kernellerin sadece DT değişiklikleriyle yeni SoC'lerde/platformlarda (en azından kısmen) çalışması olasılığını da büyük ölçüde artırıyor, ki bu da örneğin dağıtım yükleme imajlarının geleceğe dönük uyumluluğu açısından avantajlıdır. Örneğin, M2'deki PCIe, sürücü düzeyinde değişiklik gerektirmedi, sadece m1n1 başlangıcında değişiklikler yapıldı.
+* U-Boot, herhangi bir SoC üzerinde düzgün bir şekilde oluşturulduğunda genellikle fazla değişiklik yapmaz ve yalnızca DT bilgilerinin bir alt kümesiyle ilgilenir.
+* Linux, donanımı çalıştırmak için DT verilerine ihtiyaç duyar, bu nedenle yeni donanımların da DT güncellemelerine gereksinimi vardır. Standart DT depomuz Linux ağacımızın bir parçasıdır, ancak buradaki değişikliklerin gerçekten çalışması için genellikle m1n1 (aşama 2) güncellemelerine ihtiyaç duyulduğunu unutmayın.
 
-In an ideal world where everything is upstream and we understand ~all the hardware, DTs should be forwards- and backwards- compatible with software versions. That is, new features require everything to be up to date, but otherwise those new features simply won't be available.
+Her şeyin yukarı akışta olduğu ve tüm donanımı anladığımız ideal bir dünyada, DT'ler yazılım sürümleriyle hem ileriye hem de geriye dönük uyumlu olmalıdır. Yani yeni özellikler her şeyin güncel olmasını gerektirir, aksi takdirde bu yeni özellikler kullanılamaz.
 
-In the real world,
-* DT bindings that have not been upstreamed yet are subject to incompatible changes as they go through review. We try to avoid this, but it has happened (e.g. the AIC2 IRQ controller binding changed, which notably broke booting completely for older kernels on t600x). Sometimes we can have interim DTs that have both styles of data, to maintain compat.
-* m1n1 *should* degrade gracefully when it runs into missing DT structure for the changes it wants to patch in (i.e. m1n1 version > DT version), but those code paths don't get much testing. Please file a bug if you see it abort or crash when it shouldn't.
-* The early days of U-Boot on any given SoC might see some changes in DT dependencies (e.g. MTP keyboard support for M2 platforms goes along with DT changes, though this will degrade gracefully if missing)
-* In principle, it's possible for a Linux driver to crash badly if m1n1 was not updated to initialize the hardware properly (and if it's not injecting any DT props, the driver won't bail due to missing them). We obviously try to handle errors gracefully, but it's conceivable that e.g. missing power- or memory controller-related init could cause something like a hard SoC wedge when Linux tried to bring up dependent hardware. Maybe we should start stuffing the m1n1 version in the DT, so drivers can bail if something is known unsafe with older versions?
-* There are some DT changes that hit corner cases in the "full compat" ideal and aren't very easy to fix. For example, if a DT node introduces a dependency on another node (e.g. a producer-consumer relationship), even if it were optional in principle, that driver may fail to probe (or not even attempt to probe) if the producer's driver is not available, can't probe, or does not implement the proper producer function. We also have issues with power domains: some are currently marked "always-on" because they break something badly if turned off, but in the future we might learn how to handle this properly. If that flag is removed in newer DTs, older kernels would be in trouble.
+Gerçek dünyada, 
+* Henüz yukarı akışa aktarılmamış DT bağlamaları, inceleme sürecindeyken uyumsuz değişikliklere maruz kalabilir. Bunu önlemeye çalışsak da, bu durum bazen yaşanabilmektedir (örneğin, AIC2 IRQ denetleyici bağlaması değiştirildiğinde, t600x'teki eski kernellerde önyükleme tamamen bozuldu). Bazen uyumluluğu korumak için her iki veri stilini de içeren geçici DT'ler kullanabiliriz.
+* m1n1, düzeltmek istediği değişiklikler için eksik DT yapıları ile karşılaştığında (yani m1n1 sürümü > DT sürümü) *olağan bir şekilde* bozulmalıdır, ancak bu kod hatları çok fazla test edilmemiştir. Gereksiz yere durakladığını veya çöktüğünü görürseniz lütfen bir hata raporu oluşturun.
+* Herhangi bir SoC'de U-Boot'un ilk günlerinde DT gereksinimlerinde bazı değişiklikler görülebilir (örneğin, M2 platformları için MTP klavye desteği DT değişiklikleriyle paralel ilerler, ancak eksik olduğunda olağan bir şekilde bozulacaktır).
+* Prensip olarak, m1n1 donanımı düzgün bir şekilde başlatmak için güncellenmemişse, Linux sürücüsü ciddi şekilde çökebilir (ve DT destekleyicilerini enjekte etmiyorsa sürücü bunların eksikliği nedeniyle çökmez). Elbette hataları incelikle ele almaya çalışıyoruz, ancak örneğin güç veya bellek denetleyicisiyle ilgili init'in eksik olması, Linux bağımlı donanımı başlatmaya çalıştığında SoC'nin sert bir şekilde sıkışmasına neden olabilir. Belki de m1n1 sürümünü DT'ye eklemeye başlamalıyız, böylece sürücüler eski sürümlerde güvenli olmadığı bilinen bir şey olursa kurtulabilirler?
+* “Tam uyumluluk” idealinde uç noktalardaki bazı sorunlara sebep olan ve düzeltilmesi çok kolay olmayan bazı DT değişiklikleri vardır. Örneğin, bir DT nodunun başka bir noda bağımlılık yaratması durumunda (örneğin üretici-tüketici ilişkisi), prensipte isteğe bağlı olsa bile, üreticinin sürücüsü mevcut değilse veya uygun üretici işlevini uygulamıyorsa, sürücü tarama yapamayabilir (veya tarama yapmaya bile kalkışmayabilir). Güç alanlarıyla da sorunlarımız var. Bazıları şu anda “her zaman açık” olarak işaretlenmektedir, çünkü kapatıldıklarında ciddi sorunlara neden olmaktadırlar. Ancak gelecekte bunu doğru şekilde nasıl ele alacağımızı öğrenebiliriz. Bu ibare yeni DT'lerde kaldırılırsa, eski kernellerde sorunlar yaşanabilir.
 
-Since you *can* have multiple kernels installed, you have to pick where you source your DTs somehow. The logical choice would be the most recent kernel. For Arch, since there is only ever one installed kernel with the standard package, we get to ignore this issue (for typical users) and just always update the DTs on package updates to that version.
+Birden fazla kernel yüklemeniz *mümkün olduğu* için, DT'lerinizi nereden alacağınızı bir şekilde seçmeniz gerekir. Mantıklı seçim, en yeni kernel olacaktır. Arch için, standart paketle yalnızca bir kernel yüklendiğinden, bu sorunu (tipik kullanıcılar için) göz ardı edebilir ve paket güncellemelerinde DT'leri her zaman o sürüme güncelleyebiliriz.
 
-TL;DR: Update your DTs when you update your kernel (unless you know they weren't touched), and also update your m1n1 to make big new stuff work.
+Kısacası, kernel'inizi güncellediğinizde DT'lerinizi de güncelleyin (değiştirilmediklerini biliyorsanız gerekli değil) ve ayrıca m1n1'inizi de güncelleyin, böylece büyük yenilikler çalışsın.
 
-## Build instructions
+## Derleme talimatları  
 
-Assuming everything is done natively (no cross-compiling):
+Her şeyin yerel olarak yapıldığını varsayarsak (çapraz derlemesiz):
 
 ### m1n1
 
@@ -70,33 +70,33 @@ git clone --recursive https://github.com/AsahiLinux/m1n1
 cd m1n1
 make ARCH= RELEASE=1
 ```
-Note: RELEASE=1 currently just turns off verbose log output by default. You can enable it in release builds using `nvram boot-args=-v` from recoveryOS.
+Not: RELEASE=1 şu anda varsayılan olarak ayrıntılı log çıktısını kapatmaktadır. Kurtarma işletim sisteminden `nvram boot-args=-v` komutunu kullanarak sürüm derlemelerinde bunu etkinleştirebilirsiniz.
 
-Output is at `build/m1n1.bin`.
+Çıktı `build/m1n1.bin` dosyasında bulunur.
 
 ### U-Boot
 
 ```shell
 git clone https://github.com/AsahiLinux/u-boot
 cd u-boot
-git checkout asahi-releng # this branch is what we ship to users, it has the EFI partition auto-detection stuff
+git checkout asahi-releng # bu branch, kullanıcılara gönderdiğimiz şeydir, EFI bölümünü otomatik olarak algılama öğelerine sahiptir.
 make apple_m1_defconfig
 make
 ```
 
-Output is at `u-boot-nodtb.bin`.
+Çıktı `u-boot-nodtb.bin` içindedir.
 
-### Device Trees
+### Aygıt Ağaçları
 
-The canonical DTs are the ones in our [Linux kernel tree](https://github.com/AsahiLinux/linux). Building kernels is out of scope for this doc.
+Kanonik DT'ler, [Linux kernel ağacımızdaki](https://github.com/AsahiLinux/linux) DT'lerdir. Kernel oluşturma, bu belgenin kapsamı dışındadır.
 
-Output is at `arch/arm64/boot/dts/apple/*.dtb`.
+Çıktı `arch/arm64/boot/dts/apple/*.dtb` içindedir.
 
-## Installation
+## Kurulum
 
-m1n1, the set of device trees, and U-Boot are all packaged together into a single file which becomes m1n1 stage 2, loaded from `<ESP>/m1n1/boot.bin`. This is done by simple concatenation, using the [update-m1n1](https://github.com/AsahiLinux/asahi-scripts/blob/main/update-m1n1) script.
+m1n1, aygıt ağaçları kümesi ve U-Boot, tek bir dosyada paketlenir ve bu dosya m1n1 aşama 2 olarak `<ESP>/m1n1/boot.bin` adresinden yüklenir. Bu, ['update-m1n1' (m1n1 güncelleme)](https://github.com/AsahiLinux/asahi-scripts/blob/main/update-m1n1) kod dizisi kullanılarak basit bir zincirleme işlemiyle yapılır.
 
-Simplified,
+Kolaylaştırılmış haliyle,
 ```shell
 m1n1_dir="/boot/efi/m1n1"
 src=/usr/lib/asahi-boot/
@@ -109,16 +109,16 @@ cat "$src/m1n1.bin" \
     >"${target}"
 ```
 
-Notes:
-* U-boot must be gzipped for m1n1 to load it reliably (this has to do with the image format not being self-delimiting)
-* All device trees are included; m1n1 will select the appropriate one for the given platform
-* The Asahi Linux kernel packages install the DTBs to `/lib/modules/$ver/dtbs/`. This is nonstandard.
-* You can append textual `var=value\n` lines to the .bin to configure some things in m1n1. We'll have better tooling for this in the future, but for now it's really only for very specific cases.
+Notlar:   
+* m1n1'in güvenilir bir şekilde yükleyebilmesi için U-boot'un gzip ile sıkıştırılması gerekir (bu, imaj biçiminin kendi kendini sınırlamamasıyla ilgilidir).  
+* Tüm aygıt ağaçları dahildir. m1n1, verilen platform için uygun olanı seçecektir.
+Asahi Linux kernel paketleri, DTB'leri `/lib/modules/$ver/dtbs/` konumuna yükler. Bu standart dışı bir durumdur.
+* m1n1'de bazı şeyleri yapılandırmak için .bin dosyasına `var=value\n` satırlarını ekleyebilirsiniz. Gelecekte bunun için daha iyi araçlarımız olacak, şimdilik sadece çok özel durumlar için kullanılabilir.
 
-You might want to rename the old `m1n1.bin` after an update. If booting fails, you can just go into macOS or recovery mode and put the old one back, since macOS can access the FAT32 ESP just fine (`diskutil list` then mount it with `diskutil mount`).
+Güncellemeden sonra eski `m1n1.bin` dosyasının adını değiştirmek isteyebilirsiniz. Önyükleme başarısız olursa, macOS FAT32 ESP'ye sorunsuz bir şekilde erişebildiğinden (`diskutil list` komutunu çalıştırıp `diskutil mount` komutuyla bağlayın), macOS veya kurtarma moduna girip eski dosyayı geri yükleyebilirsiniz.
 
-## Misc stuff
+## Ekstra şeyler
 
-m1n1 stuffs the Apple keyboard code into `/proc/device-tree/chosen/asahi,kblang-code` (as a big-endian u32 cell, standard for DT). The mapping is [here](https://github.com/AsahiLinux/asahi-calamares-configs/blob/main/bin/first-time-setup.sh#L109). Feel free to start a discussion on how to standardize a proper binding for this.
+m1n1, Apple klavye kodunu `/proc/device-tree/chosen/asahi,kblang-code` içine yerleştirir (DT için standart olan big-endian u32 hücresi olarak). Eşleme [burada](https://github.com/AsahiLinux/asahi-calamares-configs/blob/main/bin/first-time-setup.sh#L109) bulunur. Bunun için uygun bir bağlamayı nasıl standart hale getirebileceğimiz konusunda özgürce fikirlerinizi paylaşabilirsiniz.
 
-We have a whole story for how vendor firmware (i.e. firmware that is not redistributable as a distro package, but is prepared at install time) is handled. How that works is covered in detail [here](../platform/open-os-interop.md#firmware-provisioning).
+Satıcı aygıt yazılımının (yani, dağıtım paketi olarak yeniden dağıtılamayan, ancak yükleme sırasında hazırlanan aygıt yazılımı) nasıl işlendiğine dair derin bir açıklamamız var. Bunun nasıl çalıştığı [burada](../platform/open-os-interop.md#firmware-provisioning) ayrıntılı olarak anlatılmıştır.
