@@ -1,77 +1,77 @@
 ---
-title: Apple Silicon Boot Flow
+title: Apple Silicon Önyükleme Süreci   
 summary:
-  Boot flow used by Apple Silicon devices, from SoC-integrated ROM to user code
+  SoC ile tümleşik ROM'dan kullanıcı koduna kadar Apple Silicon cihazları tarafından kullanılan tüm önyükleme süreci
 ---
 
-Apple Silicon devices seem to follow a boot flow very similar to modern iOS devices.
+Apple Silicon cihazları, modern iOS cihazlarına çok benzer bir önyükleme sürecini takip ediyor gibi görünmektir.
 
-# Stage 0 (SecureROM)
+# Aşama 0 (SecureROM)
 
-This stage is located in the boot [ROM](../project/glossary.md#r). Among others, it verifies, loads and executes normal stage 1 from [NOR](../project/glossary.md#n). If this fails, it falls back to [DFU](../project/glossary.md#d) and wait for an [iBSS](../project/glossary.md#i) loader to be sent, before continuing with the [DFU](../project/glossary.md#d) flow at stage 1.
+Bu aşama önyükleme [ROM](../project/glossary.md#r) içinde bulunur. Diğer işlevlerinin yanı sıra, [NOR](../project/glossary.md#n)'dan normal aşama 1'i doğrular, yükler ve yürütür. Bu başarısız olursa, [DFU](../project/glossary.md#d)'ya geri döner ve [iBSS](../project/glossary.md#i) yükleyicisinin gönderilmesini bekler. Ardından aşama 1'deki [DFU](../project/glossary.md#d) akışına devam eder.
 
-# Normal flow
+# Normal süreç
 
-## Stage 1 (LLB/iBoot1)
+## Aşama 1 (LLB/iBoot1)
 
-This stage is the primary early loader, located in the on-board [NOR](../project/glossary.md#n). This boot stage very roughly goes as follows:
+Bu aşama, yerleşik [NOR](../project/glossary.md#n) içinde bulunan ana başlangıç yükleyicisidir. Bu önyükleme aşaması en genel hatlarıyla şu şekilde gerçekleşir:
 
-* Read the `boot-volume` variable from [NVRAM](../project/glossary.md#n): its format is `<gpt-partition-type-uuid>:<gpt-partition-uuid>:<volume-group-uuid>`. Other related variables seem to be `update-volume` and `upgrade-boot-volume`, possibly selected by metadata inside the `boot-info-payload` variable;
-* Get the local policy hash:
-  - First try the local proposed hash ([SEP](../project/glossary.md#s) command 11);
-  - If that is not available, get the local blessed hash ([SEP](../project/glossary.md#s) command 14)
-* Read the local boot policy, located on the iSCPreboot partition at `/<volume-group-uuid>/LocalPolicy/<policy-hash>.img4`. This boot policy has the following specific metadata keys:
-  - `vuid`: UUID: Volume group UUID - same as above
-  - `kuid`: UUID: KEK group UUID
-  - `lpnh`: SHA384: Local policy nonce hash
-  - `rpnh`: SHA384: Remote policy nonce hash
-  - `nsih`: SHA384: Next-stage IMG4 hash
-  - `coih`: SHA384: fuOS (custom kernelcache) IMG4 hash
-  - `auxp`: SHA384: Auxiliary user-authorized kernel extensions hash
-  - `auxi`: SHA384: Auxiliary kernel cache IMG4 hash
-  - `auxr`: SHA384: Auxiliary kernel extension recept hash
-  - `prot`: SHA384: Paired Recovery manifest hash
-  - `lobo`: bool: Local boot policy
-  - `smb0`: bool: Reduced security enabled
-  - `smb1`: bool: Permissive security enabled
-  - `smb2`: bool: Third-party kernel extensions enabled
-  - `smb3`: bool: Manual mobile device management (MDM) enrollment
-  - `smb4`: bool?: MDM device enrollment program disabled
-  - `sip0`: u16: SIP customized
-  - `sip1`: bool: Signed system volume (`csrutil authenticated-boot`) disabled
-  - `sip2`: bool: CTRR ([configurable text region read-only](https://keith.github.io/xcode-man-pages/bputil.1.html)) disabled
-  - `sip3`: bool: `boot-args` filtering disabled
+* [NVRAM](../project/glossary.md#n)'den `boot-volume` değişkenini oku: formatı `<gpt-partition-type-uuid>:<gpt-partition-uuid>:<volume-group-uuid>` şeklindedir. Diğer ilgili değişkenler `update-volume` ve `upgrade-boot-volume` gibi görünmektedir ve muhtemelen `boot-info-payload` değişkeni içindeki meta veriler tarafından seçilmektedir;
+* Yerel  hash'ini alın:   
+  - Önce yerel proposed hash'i deneyin ([SEP](../project/glossary.md#s) komut 11);   
+  - Bu mevcut değilse, yerel blessed hash'i alın ([SEP](../project/glossary.md#s) komut 14)
+* iSCPreboot disk bölümünde `/<volume-group-uuid>/LocalPolicy/<policy-hash>.img4` konumunda bulunan yerel önyükleme poliçesini oku. Bu önyükleme poliçesi aşağıdaki özel meta veri anahtarlarına sahiptir:
+ - `vuid`: UUID: Birim grubu UUID'si - yukarıdaki ile aynı
+  - `kuid`: UUID: KEK grubu UUID'si
+  - `lpnh`: SHA384: Yerel poliçe nonce hash'i
+  - `rpnh`: SHA384: Uzaktan poliçe nonce hash'i
+  - `nsih`: SHA384: Sonraki aşama IMG4 hash'i
+  - `coih`: SHA384: fuOS (özel kernelcache) IMG4 hash'i
+  - `auxp`: SHA384: Yardımcı kullanıcı yetkilendirmeli çekirdek uzantıları hash'i
+  - `auxi`: SHA384: Yardımcı kernel önbelleği IMG4 hash'i
+  - `auxr`: SHA384: Yardımcı kernel uzantısı alıcı hash'i
+  - `prot`: SHA384: Eşleştirilmiş Kurtarma manifestosu hash'i
+  - `lobo`: bool: Yerel önyükleme politikası
+  - `smb0`: bool: Azaltılmış güvenlik etkin
+  - `smb1`: bool: Seçmeli güvenlik etkin
+  - `smb2`: bool: Üçüncü taraf kernel uzantıları etkin
+  - `smb3`: bool: Manuel mobil cihaz yönetimi (MDM) kaydı
+  - `smb4`: bool?: MDM cihaz kayıt programı devre dışı
+  - `sip0`: u16: Özelleştirilmiş SIP
+  - `sip1`: bool: İmzalı sistem birimi (`csrutil authenticated-boot`) devre dışı
+  - `sip2`: bool: CTRR ([yapılandırılabilir metin bölgesi - salt okunur](https://keith.github.io/xcode-man-pages/bputil.1.html)) devre dışı
+  - `sip3`: bool: `boot-args` filtreleme devre dışı
 
-  And optionally the following linked manifests, each located at `/<volume-group-uuid>/LocalPolicy/<policy-hash>.<id>.im4m`
-  - `auxk`: AuxKC (third party kext) manifest
-  - `fuos`: fuOS (custom kernelcache) manifest
+  Ve opsiyonel olarak aşağıdaki bağlantılı manifestolar. Her biri `/<volume-group-uuid>/LocalPolicy/<policy-hash>.<id>.im4m` konumunda bulunur.
+  - `auxk`: AuxKC (üçüncü taraf kext) manifestosu
+  - `fuos`: fuOS (özel kernelcache) manifestosu
 
-* If loading the next stage:
+* Bir sonraki aşamayı yükleniyorsa:
 
-  - The boot directory is located at the target partition Preboot subvolume, at path `/<volume-uuid>/boot/<local-policy.metadata.nsih>`;
-  - Decrypt, verify and execute `<boot-dir>/usr/standalone/firmware/iBoot.img4` with the device tree and other firmware files in the same directory. No evidence towards other metadata descriptors yet.
+  - Önyükleme dizini, hedef bölüm olan Preboot alt biriminde, `/<volume-uuid>/boot/<local-policy.metadata.nsih>` adresinde bulunur;
+  - `<boot-dir>/usr/standalone/firmware/iBoot.img4` dosyasının, aynı dizindeki aygıt ağacı ve diğer aygıt yazılımı dosyalarıyla birlikte şifresini çöz, doğrula ve çalıştır. Henüz diğer meta veri tanımlayıcılarına ilişkin bir bulgu bulunmamaktadır.
 
-* If loading a custom stage ([fuOS](../project/glossary.md#f)):
+* Özel bir aşama yükleniyorsa ([fuOS](../project/glossary.md#f)):
 
   - ...
 
-If it fails at any point during this, it will either error out or fall back to [DFU](../project/glossary.md#d), waiting for an iBEC loader to be sent, before continuing with the [DFU](../project/glossary.md#d) flow at stage 2.
+Bu işlem sırasında herhangi bir noktada hata oluşursa, hata mesajı verilir veya [DFU](../project/glossary.md#d) aşamasına geri dönülerek bir iBEC yükleyicinin gönderilmesi beklenir. Ardından 2. aşamadaki [DFU](../project/glossary.md#d) sürecine devam edilir.
 
-## Stage 2 (iBoot2)
+## Aşama 2 (iBoot2)
 
-This stage is the OS-level loader, located inside the OS partition and shipped as part of macOS. It loads the rest of the system.
+Bu aşama, işletim sistemi bölümünün içinde bulunan ve macOS'un bir parçası olarak gelen işletim sistemi düzeyinde bir yükleyicidir. Sistemin geri kalanını yükler.
 
-# [DFU](../project/glossary.md#d) flow
+# [DFU](../project/glossary.md#d) süreci
 
-## Stage 1 (iBSS)
+## Aşama 1 (iBSS)
 
-This stage is sent to the device by the "reviving" host. It bootstraps, verifies and runs the second stage, iBEC.
+Bu aşama, “canlandıran” ana bilgisayar tarafından cihaza gönderilir. İkinci aşama olan iBEC'i önyükler, doğrular ve çalıştırır.
 
-## Stage 2 (iBEC)
+## Aşama 2 (iBEC)
 
-# Modes
+# Modlar
 
-Once booted, the [AP](../project/glossary.md#a) can be in one of several boot modes, as confirmed by the [SEP](../project/glossary.md#s):
+Önyükleme yapıldıktan sonra [AP](../project/glossary.md#a), [SEP](../project/glossary.md#s) tarafından onaylandığı üzere birkaç önyükleme modundan birinde olabilir:
 
 |  ID | Name                                      |
 |----:|-------------------------------------------|
@@ -82,4 +82,4 @@ Once booted, the [AP](../project/glossary.md#a) can be in one of several boot mo
 |   4 | restoreOS                                 |
 | 255 | unknown                                   |
 
-The [SEP](../project/glossary.md#s) only allows execution of certain commands (such as editing the boot policy) in [1TR](../project/glossary.md#1), or it will fail with error 11, "AP boot mode".
+[SEP](../project/glossary.md#s) yalnızca [1TR](../project/glossary.md#1) içinde belirli komutların (örneğin önyükleme poliçesini düzenleme) yürütülmesine izin verir, aksi takdirde 11 numaralı “AP önyükleme modu” hatasıyla başarısız olur.
