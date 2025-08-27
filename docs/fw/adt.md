@@ -1,32 +1,31 @@
 ---
-title: Apple Device Tree (ADT)
+title: Apple Device Tree (ADT) / Apple Aygıt Ağacı
 summary:
-  Apple Device Tree, the hardware discovery and initialisation
-  system used on Apple Silicon devices.
+    Apple Device Tree (Apple Aygıt Ağacı), Apple Silicon cihazlarında kullanılan donanım keşif ve başlatma sistemidir.
 ---
 
-When Apple firmware boots a kernel, it passes a device tree in a binary format. This format is very similar to, but different from, the Open Firmware standard expected by Linux.
+Apple aygıt yazılımı bir kerneli başlattığında, bir aygıt ağacını binary formatında aktarır. Bu format, Linux tarafından beklenen Open Firmware (Açık Aygıt Yazılımı) standardına çok benzer, ancak ondan farklıdır.
 
-Like Linux devicetrees, the Apple device tree (ADT) encodes a number of untyped byte arrays (properties) in a hierarchy of nodes. These describe the available hardware, or provide other information that Apple thinks the firmware might need to tell the kernel about. This includes identifying and secret information like serial numbers and WiFi keys.
+Linux aygıt ağaçları (Linux DT) gibi, Apple Device Tree (ADT) de bir dizi türsüz bayt kümesini (verilerini) bir nod hiyerarşisinde kodlar. Bunlar, kullanılabilir donanımı tanımlar veya Apple'ın aygıt yazılımının kernele bildirmesi gerektiğini düşündüğü diğer bilgileri sağlar. Buna seri numaraları ve WiFi anahtarları gibi tanımlayıcı ve gizli bilgiler dahildir.  
 
-The main difference between ADTs and Linux DTs is byte order; since properties are untyped, we can't automatically correct for that.
+ADT'ler ile Linux DT'ler arasındaki temel fark bayt sırasıdır ve verileri türsüz olduğundan bunu otomatik olarak düzeltemeyiz.
 
-## Obtaining your ADT
+## ADT'nizi Edinin
 
-Given hardware, you can access your ADT in a number of ways.
+Donanıma dayanarak, ADT'nize çeşitli yollarla erişebilirsiniz.  
 
-### Option 1: via m1n1 debug console. 
-The easiest way is probably using m1n1 via adt.py
+### Seçenek 1: m1n1 hata ayıklama konsolu üzerinden.  
+En kolay yol muhtemelen adt.py aracılığıyla m1n1'i kullanmaktır.
 
 ```
 cd m1n1/proxyclient ; python -m m1n1.adt --retrieve dt.bin
 ```
 
-This will write a file called "dt.bin" containing the raw (binary) ADT and print the decoded ADT.
+Bu, ham (binary) ADT içeren “dt.bin” adlı bir dosya oluşturacak ve kodu çözümlenmiş ADT'yi yazdıracaktır.
 
-### Option 2: via macOS im4p files (Note: these are missing details filled in by iBoot during boot)
+### Seçenek 2: macOS im4p dosyaları aracılığıyla (Not: bunlar, önyükleme sırasında iBoot tarafından doldurulan eksik ayrıntılardır)
 ### img4lib
-Get a copy of xerub's img4lib
+xerub'un img4lib dosyasının bir kopyasını alın
 
 ```
 git clone https://github.com/xerub/img4lib
@@ -37,59 +36,57 @@ make install
 ```
 
 ### img4tool
-Get a copy of tihmstar's img4tool (you will also need his libgeneral as well as autoconf, automake, libtool, pkg-config, openssl and libplist-2.0).
+Tihmstar'ın img4tool programının bir kopyasını edinin (ayrıca libgeneral, autoconf, automake, libtool, pkg-config, openssl ve libplist-2.0 programlarına da ihtiyacınız olacaktır).
 
 ```
 git clone https://github.com/tihmstar/libgeneral.git
 git clone https://github.com/tihmstar/img4tool.git
 ```
-then for each 
+sonra her biri için
+
 ```
 ./autogen.sh
 make
 make install
 ```
-### Obtaining device tree files
-copy the im4p file from the below directory. See [Devices](../hw/devices/device-list.md) for Machine 'j' model details.
+### Aygıt ağacı dosyalarını elde etme
+Aşağıdaki dizinden im4p dosyasını kopyalayın. Makine ‘j’ modelinin ayrıntıları için [Aygıtlar](../hw/devices/device-list.md) bölümüne bakın.
 
 `/System/Volumes/Preboot/[UUID]/restore/Firmware/all_flash/DeviceTree.{model}.im4p`
 
-If the dir doesn't exist try disabling csrutil in recovery mode, going to settings and enabling terminal to access all files, or start from `Volumes/Macintosh HD/` because it may be symlinked. If it's still not accessible, try good ol `sudo find . -type f -name '*.im4p'`.
+Dizin mevcut değilse, kurtarma modunda csrutil'i devre dışı bırakmayı deneyin, ayarlara gidip terminalin tüm dosyalara erişmesini sağlayın veya `Volumes/Macintosh HD/` konumundan başlayın, çünkü symlink ile sembolik bağlanmış olabilir. Hala erişilemez durumdaysa, eski usül `sudo find . -type f -name ‘*.im4p’` komutunu deneyin.
 
-then use img4tool to extract the im4p file into a .bin file e.g.
+ardından img4tool kullanarak im4p dosyasını bir .bin dosyasına çıkarın. Örneğin:
 ```
 img4tool -e DeviceTree.j274ap.im4p -o j274.bin
 ```
-To do the same with img4lib, do
+Aynı şeyi img4lib için de yapmak için, şöyle yapın:
 ```
 img4 -i DeviceTree.j274ap.im4p -o j274.bin
 ```
 
-### Option 3: From macOS
+### Seçenek 3: macOS üzerinden
 
-You can get a textual representation of the ADT directly from macOS by running:
+Aşağıdaki komutu çalıştırarak ADT'nin metin olarak gösterimini doğrudan macOS'tan alabilirsiniz:
 ```
 ioreg -p IODeviceTree -l | cat
 ```
-While this does not require decoding, it outputs much less information than using m1n1 (see below).
+Bu kod çözümleme gerektirmese de, m1n1 kullanmaya kıyasla çok daha az bilgi çıkarır (aşağıya bakınız).
 
-## Decoding an ADT
+## ADT' nin kodunu çözümleme
 
-after m1n1 installation (see [repo page](https://github.com/AsahiLinux/m1n1))
+m1n1 kurulumundan sonra (bkz. [depo sayfası](https://github.com/AsahiLinux/m1n1))
 
 `cd m1n1/proxyclient`
 
-get construct python library (not a construct.py file, it's a library)
+construct python kütüphanesini edinin (construct.py dosyası değil, kütüphane)
 
 `pip install construct`
 
-copy obtained j{*}.bin file into proxyclient dir && extract by:
+j{*}.bin dosyasını proxyclient dizinine kopyalayın ve şu komutla çıkarın:
 
 `python -m m1n1.adt j{*}.bin`
 
-You can also get a memory map with the -a option:
+-a seçeneği ile bir bellek haritası da alabilirsiniz:
 
 `python -m m1n1.adt -a j{*}.bin` 
-
-Other ways?
-
