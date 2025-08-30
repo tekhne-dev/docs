@@ -12,7 +12,7 @@ summary:
 * `int`: Onluk bir tamsayı.
 * `bin-int(n)`: `binary` ile kodlanmış bir tamsayı, little-endian (sağdan okumalı), `n` bayt.
 * `hex-int`: Onaltılık bir tamsayı.
-* `volume`: `<gpt-partition-type-uuid>:<gpt-partition-uuid>:<volume-group-uuid>` biçiminde bir dize. GPT bölüm UUID'si, ilk üç bileşeninin baytlarının  değiştirilmiş olması nedeniyle biraz garip görünüyor.
+* `volume`: `<gpt-partition-type-uuid>:<gpt-partition-uuid>:<volume-group-uuid>` biçiminde bir dizi. GPT bölüm UUID'si, ilk üç bileşeninin baytlarının  değiştirilmiş olması nedeniyle biraz garip görünüyor.
 
 # Değerler
 
