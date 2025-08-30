@@ -26,7 +26,7 @@ summary:
 * `boot-volume`: `volume`: Varsayılan önyükleme birimi.
 * `failboot-breadcrumbs`: `string`: Önyükleme sürecinin çeşitli aşamalarında oluşturulan, boşluklarla ayrılmış kodlar. Örnek: `3000c(706d7066) 3000d 30010 f0200 f0007(706d7066) 3000c(0) 3000d 40038(958000) 40039(1530000) 4003a(0) 3000f(64747265) 3000c(64747265) 40029 3000d 30010 3000f(69626474) 3000c(69626474) 40029 3000d 30010 3000f(69737973) 3000c(69737973) 3000d 30010 3000f(63737973) 3000c(63737973) 3000d 30010 3000f(62737463) 3000c(62737463) 3000d 30010 3000f(74727374) 3000c(74727374) 3000d 30010 3000f(66756f73) 40060004 30011 30007 <COMMIT> 401d000c <COMMIT> <BOOT> 1c002b(2006300) 3000f(0) 3000c(0) 3000d 30010 3000f(69626f74) 3000c(69626f74) 40040204 40040023 4003000e 30011 30007 401d000f(ffffffff) <COMMIT> `.
 * `nonce-seeds`: `binary`
-* `panicmedic-timestamps`: `hex-int`: Nanosaniye hassasiyetinde UNIX zaman damgası, muhtemelen son çekirdek panik durumunun meydana geldiği zamanı kaydediyor.
+* `panicmedic-timestamps`: `hex-int`: Nanosaniye hassasiyetinde UNIX zaman damgası, muhtemelen son kernel panik durumunun meydana geldiği zamanı kaydediyor.
 * `policy-nonce-digests`: `binary`
 * `upgrade-boot-volume`: `volume`
 
