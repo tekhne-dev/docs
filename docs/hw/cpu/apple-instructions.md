@@ -1,10 +1,10 @@
 ---
-title: Apple Proprietary Instructions
+title: Apple Özel Talimatları
 summary:
-  Apple's proprietary extensions to the A64 Instruction Set
+  Apple'ın A64 komut kümesine yönelik özel eklemeleri
 ---
 
-Apple proprietary instructions seem to be in the 0x0020xxxx range.
+Apple'ın özel talimatları 0x0020xxxx aralığında gözükmektedir.
 
 ```
 00200000 - 002007ff            MUL53, see https://gist.github.com/TrungNguyen1909/5b323edda9a21550a1621af506e8ce5f
