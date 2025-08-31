@@ -1,23 +1,23 @@
 ---
-title: SPRR and GXF
+title: SPRR ve GXF
 summary:
-  SPRR and GXF are in-silicon security features used to harden macOS/Darwin
+    SPRR ve GXF, macOS/Darwin'i daha güvenli yapmak için kullanılan silikon içi güvenlik özellikleridir.
 ---
 
 
-# Guarded execution
+# Korumalı yürütme
 
-Guarded execution mode is a lateral exception level next to EL1 and EL2 which uses the same pagetables but different permissions (see SPRR). These levels are called GL1 and GL2. It's enabled with bit 1 in S3_6_C15_1_2.
+Korumalı yürütme modu, EL1 ve EL2'nin yanında yer alan ve aynı pagetable'ları fakat farklı izinleri kullanan (bknz. SPRR) bir yanal istisna düzeyidir. Bu düzeyler GL1 ve GL2 olarak adlandırılır. S3_6_C15_1_2'deki bit 1 ile etkinleştirilir.
 
-The instruction `0x00201420` is genter and switches from EL to GL and sets the PC to `S3_6_C15_C8_1`.
-`0x00201420` is gexit which returns to EL.
+`0x00201420` komutu 'genter' olup EL'den GL'ye geçer ve PC'yi `S3_6_C15_C8_1` olarak ayarlar.
+`0x00201420` 'gexit' olup EL'ye geri döner.
 
 ```
 #define SYS_GXF_ENTER_EL1 sys_reg(3, 6, 15, 8, 1)
 ```
 
-Guarded mode has a separate set of ELR, FAR, ESR, SPSR, VBAR and TPIDR registers just like EL1/2.
-Additionally the ASPSR register indicates if gexit should return to GL or EL.
+Korumalı modda, tıpkı EL1/2 gibi ayrı ayrı ELR, FAR, ESR, SPSR, VBAR ve TPIDR kayıtları bulunur.
+Ek olarak, ASPSR kaydı gexit'in GL'ye mi yoksa EL'ye mi dönmesi gerektiğini gösterir.
 
 ```
 #define SYS_TPIDR_GL1 sys_reg(3, 6, 15, 10, 1)
@@ -30,18 +30,18 @@ Additionally the ASPSR register indicates if gexit should return to GL or EL.
 ```
 
 
-# SPRR
+# SPRR  
 
-SPRR takes the permission bits from pagetable entries and converts them into an attribute index similar to how MAIR works:
+SPRR, pagetable girişlerinden izin bitlerini alır ve bunları MAIR'ın çalışma şekline benzer şekilde bir öznitelik dizini haline dönüştürür:
 
 ```
    3      2      1     0
  AP[1]  AP[0]   UXN   PXN
 ```
 
-Note that UXN and PXN are flipped compared to APRR!
+UXN ve PXN'nin APRR'ye göre tersine çevrildiğine dikkat edin!
 
-This is then used to index into a system register where each entry has four bits:
+Sonrasında bu, her girdinin dört bitlik olduğu bir sistem kaydına indekslemek için kullanılır:
 
 
 ```
@@ -49,8 +49,7 @@ This is then used to index into a system register where each entry has four bits
   GL[1] GL[0] EL[1] EL[0]
 ```
 
-GL/EL can be treated mostly separate but there are two exceptions where a specific GL permissions
-modifies what the two EL bits usually mean.
+GL/EL çoğunlukla ayrı olarak ele alınabilir, ancak belirli bir GL izninin iki EL bitinin genel anlamını değiştirdiği iki istisna vardır.
 
 
 | register value | EL page permissions | GL page permissions |
@@ -73,12 +72,12 @@ modifies what the two EL bits usually mean.
 | `1111` | `rw-` | `rw-` |
 
 
-These four bits indicate the actual permissions when running in EL or GL mode.
-EL0 and EL1 have separate registers such that the permissions are decoupled.
+Bu dört bit, EL veya GL modunda çalışırken gerçek izinleri gösterir.
+EL0 ve EL1, izinlerin ayrıştırılması için ayrı kayıtlara sahiptir.
 
-bit 1 in S3_6_C15_C1_0 / SPRR_CONFIG_EL1 enables SPRR and access to new system registers.
+S3_6_C15_C1_0 / SPRR_CONFIG_EL1'deki bit 1, SPRR'yi ve yeni sistem kayıtlarına erişimi etkinleştirir.
 
-S3_6_C15_1_5 is the permissions register for EL0 and S3_6_C15_1_6 is for EL1/GL1.
+S3_6_C15_1_5, EL0 için izin kaydıdır. S3_6_C15_1_6 ise EL1/GL1 içindir.
 
 ```
 #define SYS_SPRR_CONFIG_EL1       sys_reg(3, 6, 15, 1, 0)
@@ -90,4 +89,3 @@ S3_6_C15_1_5 is the permissions register for EL0 and S3_6_C15_1_6 is for EL1/GL1
 #define SYS_SPRR_PERM_EL0 sys_reg(3, 6, 15, 1, 5)
 #define SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 ```
-
