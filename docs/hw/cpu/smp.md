@@ -1,54 +1,54 @@
 ---
-title: Symmetric Multiprocessing (SMP)
+title: Simetrik Çoklu İşlem (SMP)
 summary:
-  Secondary application processor initialisation routine for Apple Silicon
-  SoCs
+  Apple Silicon SoC'ler için ikincil uygulama işlemcisi başlatma prosedürü
 ---
 
-## SMP spin-up
+## SMP'nin devreye girişi
 
-From the ADT:
+ADT'den:
 
-* `/arm-io/pmgr[reg]` power manager registers
-    * CPU start block is at a device-dependent offset to this register
-        * 0x30000 for A7-A8(X)
-        * 0xd4000 for A9(X)-A11, T2
-        * 0x54000 for M1 series
-        * 0x34000 for M2 and M3
-        * 0x28000 for M2 Pro/Max
-        * 0x88000 for M3 Pro/Max
-    * For multi-die systems, each die has its own power manager registers.
-      The power manager registers for each die is at offset 
-      `die * 0x2000000000` from the registers of die 0.
-* `/cpus/cpu<n>[cpu-impl-reg]` CPU implementation registers
-* `/cpus/cpu<n>[reg]` CPU startup information
-     * Bits [0:7] holds the core id
-     * Bits [8:10] holds the cluster id
-     * Bits [11:14] holds the die id
+* `/arm-io/pmgr[reg]` güç yöneticisi kayıtları
+    * CPU başlatma bloğu, bu kayıtlara 'cihaza bağlı' bir ofset konumundadır.
+        * A7-A8(X) için      - 0x30000
+        * A9(X)-A11, T2 için - 0xd4000
+        * M1 serisi için     - 0x54000
+        * M2 ve M3 için      - 0x34000
+        * M2 Pro/Max için    - 0x28000
+        * M3 Pro/Max için    - 0x88000
+    * Çoklu die (çip parçası) sistemlerinde, her die kendi güç yöneticisi kayıtlarına sahiptir.
+      Her die için güç yöneticisi kayıtları, die 0 kayıtlarından 
+      `die * 0x2000000000` ofsetinde bulunur.
+* `/cpus/cpu<n>[cpu-impl-reg]` CPU implementasyon kayıtları
+* `/cpus/cpu<n>[reg]` CPU başlatma bilgileri
+     * [0:7] bitleri çekirdek (core) kimliğini içerir
+     * [8:10] bitleri küme (cluster) kimliğini içerir
+     * [11:14] bitleri die kimliğini içerir
 
-A11 does not handle clusters properly, so both P and E CPUs are considered cluster 0.
-ECPUs are 0-3 while PCPUs are 4-5.
+A11 kümeleri düzgün bir şekilde işlemediğinden, hem P hem de E CPU'lar küme 0 olarak kabul edilir.
+ECPU'lar 0-3, PCPU'lar ise 4-5'tir.
 
-For old firmwares, `/cpus/cpu<n>[cpu-impl-reg]` may not exist, in this case
-`/arm-io/reg[2*n+2]` can be used to find the location to write the start address.
+Eski aygıt yazılımlarında `/cpus/cpu<n>[cpu-impl-reg]` mevcut olmayabilir, bu durumda
+`/arm-io/reg[2*n+2]` kullanılarak başlangıç adresinin yazılacağı konum bulunabilir.
 
-CPU start registers in PMGR:
+PMGR'deki CPU başlatma kayıtları:
 
 ```
-offset + 0x4: System-wide CPU core startup/active bitmask
-offset + 0x8: Cluster 0 (e) CPU core startup
-offset + 0xc: Cluster 1 (p) CPU core startup
+ofset + 0x4: Sistem genelinde CPU çekirdeği başlatma/aktif bit maskesi
+ofset + 0x8: Küme 0 (e) CPU çekirdeği başlatma
+ofset + 0xc: Küme 1 (p) CPU çekirdeği başlatma
 ```
 
-### Startup sequence
+### Startup sırası
 
-* Write start address to RVBAR at `cpu-impl-reg + 0x00`
-    * This is locked for cpu0 by iBoot, other CPUs are free to change
-* Set (1 << cpu) in `pmgr[offset + 0x4]`
-    * This seems to be some kind of system-wide "core alive" signal. It is not
-      required for the core to spin up, but without it AIC interrupts won't
-      work, and probably other things.
-* Set (1 << core) in `pmgr[(offset + 0x8) + 4*cluster]` (that's core from 0-3, cluster 0-1)
-    * This starts up the core itself.
+* Başlangıç adresini `cpu-impl-reg + 0x00` adresindeki RVBAR'a yazdır.
+    * Bu, iBoot tarafından cpu0 için kilitlenmiştir, diğer CPU'lar serbestçe değiştirilebilir.
+* `pmgr[offset + 0x4]` adresinde (1 << cpu) değerini yaz.
+    * Bu, sistem genelinde bir tür “çekirdek etkin” sinyali gibi görünüyor. Çekirdeğin çalışması için gerekli değildir,
+    ancak bu olmadan   AIC kesintileri ve muhtemelen diğer bazı işlevler çalışmaz.
+* `pmgr[(offset + 0x8) + 4*cluster]` içinde (1 << core) değerini yaz. (Bu 0-3'ten çekirdek, 0-1'den kümedir)
+    * Bu, çekirdeğin kendisini başlatır.
 
-Core starts up at RVBAR. Chicken bits / etc must be applied as usual.
+Çekirdek RVBAR'da başlatılır. Chicken bitler[^1] vb. her zamanki gibi uygulanmalıdır.
+
+[^1]: Chicken Bit: Çipte bulunan ve çipin bir özelliğinin arızalı olduğu veya performansı olumsuz etkilediği durumlarda bu özelliği devre dışı bırakmak için kullanılabilen bir bit.
