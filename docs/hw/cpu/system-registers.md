@@ -1,24 +1,24 @@
 ---
-title: System Registers
+title: Sistem Kayıt Defterleri
 ---
 
-See [System Register Dumps](system-register-dumps.md) for exhaustive enumeration and research.
+Kapsamlı bir liste ve inceleme için [Sistem Kayıt Dökümü](system-register-dumps.md) bölümüne bakın.
 
-## Glossary
+## Sözlük
 
-Some of these are guesses
+Bunların bazıları tahminlere dayanmaktadır.
 
-* ACC: Apple Core Cluster
-* HID: Hardware Implementation Defined Register
-* EHID: Hardware Implementation Defined Register (e-core)
-* IPI: Inter-processor Interrupt
+* ACC: Apple Core Cluster - (Apple Çekirdek Kümesi)
+* HID: Hardware Implementation Defined Register - (Donanım Kurulumu Tanımlı Kayıt)
+* EHID: Hardware Implementation Defined Register (e-core) - (Donanım Kurulumu Tanımlı Kayıt (e-çekirdek))
+* IPI: Inter-processor Interrupt - (İşlemciler Arası Kesinti)
 
-## Register definitions
+## Kayıt tanımları
 
-Using Linux format:
+Linux formatı ile:
 ```c
 
-/* These make sense... */
+/* Bunlar gayet mantıklı... */
 #define SYS_APL_HID0_EL1            sys_reg(3, 0, 15, 0, 0)
 #define SYS_APL_EHID0_EL1           sys_reg(3, 0, 15, 0, 1)
 #define SYS_APL_HID1_EL1            sys_reg(3, 0, 15, 1, 0)
@@ -42,12 +42,12 @@ Using Linux format:
 #define SYS_APL_HID11_EL1           sys_reg(3, 0, 15, 11, 0)
 #define SYS_APL_EHID11_EL1          sys_reg(3, 0, 15, 11, 1)
 
-/* Uh oh */
+/* Nasıl yani... */
 #define SYS_APL_HID12_EL?           sys_reg(3, 0, 15, 12, 0)
 #define SYS_APL_HID13_EL?           sys_reg(3, 0, 15, 14, 0)
 #define SYS_APL_HID14_EL?           sys_reg(3, 0, 15, 15, 0)
 
-/* All sanity went out the window here */
+/* Burada tüm mantık kuralları devreden çıkıyor. */
 #define SYS_APL_HID16_EL?           sys_reg(3, 0, 15, 15, 2)
 #define SYS_APL_HID17_EL1           sys_reg(3, 0, 15, 15, 5)
 #define SYS_APL_HID18_EL?           sys_reg(3, 0, 15, 11, 2)
@@ -144,7 +144,7 @@ Using Linux format:
 #define SYS_APL_UPMECM3_EL1         sys_reg(3, 7, 15, 9, 5)
 #define SYS_APL_UPMESR1_EL1         sys_reg(3, 7, 15, 11, 5)
 
-/* Note: out of order wrt above */
+/* Not: yukarıdakilerle ile karşılaştırıldığında sırasız */
 #define SYS_APL_UPMC0_EL1           sys_reg(3, 7, 15, 7, 4)
 #define SYS_APL_UPMC1_EL1           sys_reg(3, 7, 15, 8, 4)
 #define SYS_APL_UPMC2_EL1           sys_reg(3, 7, 15, 9, 4)
@@ -163,12 +163,11 @@ Using Linux format:
 #define SYS_APL_UPMC15_EL1          sys_reg(3, 7, 15, 7, 5)
 ```
 
-### HID registers
+### HID kayıtları
 
-This naming convention most likely comes from PowerPC. A lot of chicken bits
-seem to be located here.
+Bu isimlendirme düzeni büyük olasılıkla PowerPC'den kalmadır. Birçok chicken bit burada yer almaktadır.
 
-These are mostly chicken bits to disable CPU features, and likely many only apply only to certain CPU generations. However, their definitions are global.
+Bunlar çoğunlukla CPU özelliklerini devre dışı bırakmak için kullanılan chicken bitlerdir ve çoğu yalnızca belirli CPU nesillerine uygulanır. Ancak tanımları küreseldir.
 
 #### SYS_APL_HID0_EL1
 
@@ -205,7 +204,7 @@ These are mostly chicken bits to disable CPU features, and likely many only appl
 
 #### SYS_APL_HID2_EL1
 
-* [13] Disable MMU MTLB Prefetch
+* [13] MMU MTLB Prefetch
 * [17] Force Purge MTB
 
 #### SYS_APL_EHID2_EL1
@@ -231,7 +230,7 @@ These are mostly chicken bits to disable CPU features, and likely many only appl
 * [9] Disable Speculative LS Redirect
 * [11] Disable DC MVA Ops
 * [33] Disable Speculative Lnch Read
-* [39] Force Ns Ord Ld Req No Older Ld (Non-speculative Ordered Load Requires No Older Load?)
+* [39] Force Ns Ord Ld Req No Older Ld (Spekülatif olmayan sıralı yükleme için önceki yükleme gerekmiyor mu?)
 * [41:40] Cnf Counter Threshold
 * [44] Disable DC SW L2 Ops
 * [49] Enable Lfsr Stall Load Pipe 2 Issue
@@ -354,9 +353,9 @@ These are mostly chicken bits to disable CPU features, and likely many only appl
 * [35] Disable Cdp Reply Purged Trans
 * [52] Purge MMU On Any SPR SYNC
 
-### ACC/CYC Registers
+### ACC/CYC Kayıtları
 
-These seem to relate to the core complex and power management configuration
+Bunlar çekirdek yapısı ve güç yönetimi ayarlarıyla ilgili gibi görünüyor
 
 #### SYS_APL_ACC_OVRD_EL1
 
@@ -371,7 +370,7 @@ These seem to relate to the core complex and power management configuration
 
 #### SYS_APL_ACC_CFG_EL1
 
-Branch predictor state retention across ACC sleep
+ACC uykusu boyunca branch predictor durumunun korunması
 
 * [3:2] BP Sleep (2=BDP, 3=BTP)
 
@@ -382,9 +381,9 @@ Branch predictor state retention across ACC sleep
 * [21:20] FIQ mode (2=disable)
 * [23:22] IRQ mode (2=disable)
 
-### Memory subsystem registers
-
-Mainly error control?
+### Bellek altsistemi kayıtları
+  
+Genel olarak hata kontrolü?
 
 #### SYS_APL_LSU_ERR_STS_EL1
 
@@ -396,19 +395,19 @@ Mainly error control?
 
 #### SYS_APL_L2C_ERR_STS_EL1
 
-L2 subsystem fault control and info. This register is cluster-level and shared among all cores within a cluster.
+L2 altsistemi arıza kontrolü ve bilgisi. Bu kayıt, küme düzeyindedir ve bir küme içindeki tüm çekirdekler arasında paylaşılır.
 
-* [1] Recursive fault (fault occurred while another fault was pending?)
-* [7] Access fault (unmapped physical address, etc)
-* [38..34] Enable flags? (all 1 on entry from iBoot)
-* [39] Enable SError interrupts (asynchronous errors)
-* [43..40] Enable flags? (all 1 on entry from iBoot)
+* [1] Recursive fault (başka bir hata beklerken başka bir hata meydana gelince?)
+* [7] Access fault (haritalanmamış fiziksel adres vb.)
+* [38..34] Enable flags? (iBoot'tan girişte hepsi 1)
+* [39] Enable SError interrupts (eşzamansız hatalar)
+* [43..40] Enable flags? (iBoot'tan girişte hepsi 1)
 * [56] Enable write-1-to-clear behavior for fault flags
-* [60] Some enable? (1 on entry)
+* [60] Some enable? (girişte 1)
 
 #### SYS_APL_L2C_ERR_ADR_EL1
 
-Fault address for L2 subsystem fault.
+L2 altsistemi hatası için hata adresi.
 
 * [?:0] Physical address of the fault
 * [42] ? sometimes 1 after a recursive instruction fetch fault
@@ -417,27 +416,27 @@ Fault address for L2 subsystem fault.
 
 #### SYS_APL_L2C_ERR_INF_EL1
 
-L2 subsystem error information.
+L2 alsistemi hata bilgisi.
 
-Low bits values seen:
+Görülen düşük bit değerleri:
 
-Writes:
+Yazma:
 
 * 1: Write to unmapped or protected space, or nGnRnE write to PCIe BAR space
 * 2: 8-bit or 16-bit write to 32-bit only peripheral
 * 3: nGnRE write to SoC I/O space
 
-Reads:
+Okuma:
 
 * 1: Read from unmapped or protected space
 
-Higher bits:
+Yüksek bitler:
 
-* [26] Something to do with address alignment (seen on 16-bit and 32-bit reads/writes to addr 4 mod 8)
+* [26] Adres dizilimiyle ilgili bir sorun (16 bit ve 32 bit okuma/yazma işlemlerinde addr 4 mod 8'de görülür)
 
-### CTRR Registers
+### CTRR Kayıtları
 
-Configurable Text Read-only Region
+Yapılandırılabilir Metin Salt Okunur Bölge
 
 #### SYS_APL_CTRR_CTL_EL1
 
@@ -450,28 +449,28 @@ Configurable Text Read-only Region
 * [6] A UXN
 * [7] B UXN
 
-### APRR Registers
+### APRR Kayıtları
 
 #### SYS_APL_APRR_EL0 / SYS_APL_APRR_EL1
 
-This is a table. The value is a 4-bit field:
+Bu bir tablodur. Değer 4 bitlik bir alandır:
 
 * [0] X
 * [1] W
 * [2] R
 
-The index is the access protection and execution protection settings for a PTE.
+İndeks, bir PTE için erişim koruması ve yürütme koruması ayarlarıdır:
 
 * [0] XN
 * [1] PXN
 * [2] AP[0]
 * [3] AP[1]
 
-The register value is 16 4-bit fields, in natural order ((_rwx) << (4*prot)).
+Kayıt değeri, normal sırayla 16 adet 4 bitlik alandan oluşur ((_rwx) << (4*prot)).
 
-### IPI registers
+### IPI Kayıtları
 
-These are used for "fast" IPIs not using AIC
+Bunlar, AIC kullanmayan “hızlı” IPI'lar için kullanılır.
 
 #### SYS_APL_IPI_RR_LOCAL_EL1
 
@@ -486,32 +485,32 @@ These are used for "fast" IPIs not using AIC
 
 #### SYS_APL_IPI_CR_EL1
 
-Global register.
+Genel/merkezi kayıt defteri.
 
 * [15:0] Deferred IPI countdown value (in REFCLK ticks)
 
 #### SYS_APL_VM_TMR_LR_EL2
 
-(Name unofficial)
+(Resmi ismi değildir)
 
-Seems to be similar to ICH_LR<n>_EL2 in GIC; state gets set to pending (63:62 == 1) when guest CNTV fires, is not masked in SYS_APL_HV_TMR_MASK, and is masked in HACR_EL2.
+GIC'deki ICH_LR<n>_EL2 ile benzer görünüyor; konuk CNTV devreye girdiğinde durum beklemede (63:62 == 1) olarak ayarlanır, SYS_APL_HV_TMR_MASK'ta maskelenmez, HACR_EL2'de maskelenir.
 
 #### SYS_APL_VM_TMR_FIQ_ENA_EL2
 
-(Name unofficial)
+(Resmi ismi değildir)
 
 * [0] CNTV guest timer mask bit (1=enable FIQ, 0=disable FIQ)
 * [1] CNTP guest timer mask bit (1=enable FIQ, 0=disable FIQ)
 
 #### SYS_APL_IPI_SR_EL1
 
-Status register
+Durum kayıtı.
 
 * [0] IPI pending (write 1 to clear)
 
-Needs a barrier (ISB SY) after clearing to avoid races with IPI handling.
+IPI işlemleriyle ilgili uyuşmazlığı önlemek için temizledikten sonra bir bariyer (ISB SY) gerekir.
 
-### Virtual Memory System Architecture Lock
+### Sanal Bellek Sistem Yapısının Kilidi
 
 #### SYS_APL_VMSA_LOCK_EL1
 
@@ -522,9 +521,9 @@ Needs a barrier (ISB SY) after clearing to avoid races with IPI handling.
 * [4] Lock TTBR1
 * [63] Lock SCTLR M bit
 
-This is used to lock down writes to some Arm registers for security reasons at boot time.
+Bu, önyükleme sırasında güvenlik nedenleriyle bazı Arm kayıtlarına yazma işlemlerini kilitlemek için kullanılır.
 
-### Pointer Authentication related registers
+### Pointer (Gösterge) Kimlik Doğrulaması ile ilgili kayıtlar
 
 #### SYS_APL_APCTL_EL1
 
@@ -538,16 +537,16 @@ This is used to lock down writes to some Arm registers for security reasons at b
 
 * [0] M Key Valid
 
-### Performance Counter registers
+### Performans Sayacı kayıtları
 
-Writes to the control register need `isb` to take effect.
+Kontrol kaydına yazma işlemlerinin etkili olması için `isb` gerekir.
 
 #### SYS_APL_PMC0-9_EL1
 
-Performance counter.
+Performance sayacı.
 
-On M1: 48 bits, bit 47 triggers PMI. 
-On M2: 64 bits, bit 63 triggers PMI.
+M1'de: 48 bits, bit 47 triggers PMI. 
+M2'de: 64 bits, bit 63 triggers PMI.
 
 * PMC #0: fixed cpu cycle count if enabled
 * PMC #1: fixed instruction count if enabled
@@ -567,28 +566,28 @@ On M2: 64 bits, bit 63 triggers PMI.
 
 #### SYS_APL_PMCR1_EL1
 
-Controls which ELx modes count events
+Hangi ELx modlarının etkinlikleri hesaplayacağını kontrol eder
 
-* [7:0] EL0 A32 enable PMC #0-7 (not implemented on modern chips)
+* [7:0] EL0 A32 enable PMC #0-7 (çağdaş çiplerde uygulanmamıştır)
 * [15:8] EL0 A64 enable PMC #0-7
 * [23:16] EL1 A64 enable PMC #0-7
-* [31:24] EL3 A64 enable PMC #0-7 (not implemented except on old chips with EL3)
-* [33:32] EL0 A32 enable PMC #9-8 (not implemented on modern chips)
+* [31:24] EL3 A64 enable PMC #0-7 (EL3'lü eski çipler hariç uygulanmamıştır)
+* [33:32] EL0 A32 enable PMC #9-8 (çağdaş çiplerde uygulanmamıştır)
 * [41:40] EL0 A64 enable PMC #9-8
 * [49:48] EL1 A64 enable PMC #9-8
-* [57:56] EL3 A64 enable PMC #9-8 (not implemented on modern chips)
+* [57:56] EL3 A64 enable PMC #9-8 (çağdaş çiplerde uygulanmamıştır)
 
 #### SYS_APL_PMCR2_EL1
 
-Controls watchpoint registers.
+Watchpoint kayıtlarını kontrol eder.
 
 #### SYS_APL_PMCR3_EL1
 
-Controls breakpoints and address matching.
+Breakpoint'leri ve adres eşleşmesini kontrol eder.
 
 #### SYS_APL_PMCR4_EL1
 
-Controls opcode matching.
+Opcode eşleşmesini kontrol eder.
 
 #### SYS_APL_PMSR_EL1
 
@@ -596,7 +595,7 @@ Controls opcode matching.
 
 #### SYS_APL_PMESR0_EL1
 
-Event selection register for PMC #2-5
+PMC #2-5 için etkinlik seçim kaydı
 
 * [7:0] event for PMC #2
 * [15:8] event for PMC #3
@@ -605,7 +604,7 @@ Event selection register for PMC #2-5
 
 #### SYS_APL_PMESR1_EL1
 
-Event selection register for PMC #6-9
+PMC #6-9 için etkinlik seçim kaydı
 
 * [7:0] event for PMC #6
 * [15:8] event for PMC #7
@@ -614,7 +613,7 @@ Event selection register for PMC #6-9
 
 #### SYS_APL_UPMCx_EL1
 
-Uncore PMCs. 48 bits wide, bit 47 is an overflow bit and triggers a PMI.
+Uncore PMC'ler. 48 bit genişliğinde, bit 47 bir taşma bitidir ve bir PMI'yı tetikler.
 
 #### SYS_APL_UPMCR0_EL1
 
@@ -634,49 +633,49 @@ Uncore PMCs. 48 bits wide, bit 47 is an overflow bit and triggers a PMI.
 
 #### SYS_APL_UPMESR0_EL1
 
-Event selection register
+Etkinlik seçim kaydı
 
 #### SYS_APL_UPMESR1_EL1
 
-Event selection register
+Etkinlik seçim kaydı
 
 #### SYS_APL_UPMECM[0-3]_EL1
 
-Sets core masks for each event in the cluster, i.e. only events from those cores will be counted in uncore PMCs.
+Kümedeki her olay için çekirdek maskeleri ayarlar, yani yalnızca bu çekirdeklerden gelen olaylar çekirdek dışı PMC'lerde sayılır.
 
-### General config registers
+### Genel ayar kayıtları
 
-#### ACTLR_EL1 (ARM standard-not-standard)
+#### ACTLR_EL1 (ARM standart/standart olmayan)
 
 * [1] Enable TSO
 * [3] Disable HWP
 * [4] Enable APFLG
-* [5] Enable Apple FP extensions. This makes FPCR.FZ a don't care, and replaces it with AFPCR.DAZ and AFPCR.FTZ.
+* [5] Enable Apple FP extensions. Bu, FPCR.FZ'yi önemsiz hale getirir ve onu AFPCR.DAZ ve AFPCR.FTZ ile değiştirir.
 * [6] Enable PRSV
 * [12] IC IVAU Enable ASID
 
-#### HACR_EL2 (ARM standard-not-standard)
+#### HACR_EL2 (ARM standart/standart olmayan)
 
 * [20] Mask guest CNTV timer (1=masked)
 
-This works differently from SYS_APL_GTIMER_MASK; that one masks the timers earlier, this one leaves the FIQ "pending" in SYS_APL_HV_TMR_LR.
+Bu, SYS_APL_GTIMER_MASK'tan farklı şekilde çalışır; SYS_APL_GTIMER_MASK zamanlayıcıları daha erken maskelerken, bu zamanlayıcı FIQ'yu SYS_APL_HV_TMR_LR'de “beklemede” bırakır.
 
-### Floating-point and AMX registers
+### Floating point ve AMX kayıtları
 
 #### SYS_APL_AFPCR_EL0
 
-Apple-specific floating point related bits.
+Apple'a özgü floating point ile ilgili bitler.
 
 * [0] DAZ (Denormals as Zero)
 * [1] FTZ (Flush to Zero)
 
-These implement the SSE equivalent mode bits. This must be enabled to be useful, with ACTLR_EL1.AFP.
+Bunlar SSE eşdeğer mod bitlerini uygular. Bunun yararlı olabilmesi için ACTLR_EL1.AFP ile etkinleştirilmesi gerekir.
 
-The AArch64 FEAT_AFT feature implements equivalent support, but Apple implemented it before it was standardized. The standard version is that you need to set FPSCR[1] (AH) to 1, and then FPCR[0] (FIZ) is like DAZ, and FPCR[24] (FZ) is like FTZ.
+AArch64 FEAT_AFT özelliği eşdeğer desteği uygular, ancak Apple bunu standartlaştırılmadan önce uygulamıştır. Standart sürümde FPSCR[1] (AH) değerini 1 olarak ayarlamanız gerekir, ardından FPCR[0] (FIZ) DAZ gibi, FPCR[24] (FZ) ise FTZ gibi olur.
 
-### ID registers
+### Kimlik (ID) kayıtları
 
-#### MIDR_EL1 (ARM standard)
+#### MIDR_EL1 (ARM standardı)
 
 * [15:4] PartNum
     * 1: Alcatraz Cyclone (A7 / H6P)
@@ -701,13 +700,13 @@ The AArch64 FEAT_AFT feature implements equivalent support, but Apple implemente
 
 * [31:24] Implementer (0x61 = 'a' = Apple)
 
-#### MPIDR_EL1 (ARM standard)
+#### MPIDR_EL1 (ARM standartı)
 
 * [23:16] Aff2: 0: e-core, 1:p-core
 * [15:8] Aff1: Cluster ID
 * [7:0] Aff0: CPU ID
 
-#### AIDR_EL1 (ARM standard-not-standard)
+#### AIDR_EL1 (ARM standart/standart olmayan)
 
 * [0] MUL53
 * [1] WKDM
@@ -717,21 +716,21 @@ The AArch64 FEAT_AFT feature implements equivalent support, but Apple implemente
 * [19] APFLG
 * [20] PSRV
 
-### Unknown registers
+### Bilinmeyen kayıtlar
 
 #### s3_6_c15_c1_0_EL1 / s3_6_c15_c1_5_EL1 / s3_6_c15_c1_6_EL1
 
-These look like a newer version of APRR
+Bunlar APRR'nin daha yeni bir sürümü gibi görünüyor.
 
 #### s3_4_c15_c5_0_EL1
 
-This gets written with the core ID (within the cluster) during init.
+Bu, başlatma (init) sırasında (küme içindeki) çekirdek kimliği ile yazılır.
 
 #### AHCR_EL2
 
-Encoding unknown. Related to ACTLR_EL1[12].
+Kodaçımı bilinmiyor. ACTLR_EL1[12] ile ilgili.
 
 
-#### s3_4_c15_c10_4 (labeled SIQ_CFG_EL1 in m1n1)
+#### s3_4_c15_c10_4 (m1n1'de 'SIQ_CFG_EL1' olarak isimlendirilmiştir)
 
-If a core writes 0x3 to it's copy of the register, AICv2 will not send IRQs to that core. FIQs unaffected, as those are part of the core complexes themselves. (0x0 and 0x2 are known values that will enable IRQs on a core, but 0x0 seems to cause weird EL1 problems)
+Bir çekirdek, kayıt kopyasına 0x3 yazarsa, AICv2 o çekirdeğe IRQ'ları göndermez. FIQ'lar etkilenmez, çünkü bunlar çekirdek yapılarının bir parçasıdır. (0x0 ve 0x2, bir çekirdekte IRQ'ları etkinleştirecek değerlerdir, ancak 0x0 tuhaf EL1 sorunlarına neden oluyor gibi görünüyor)
