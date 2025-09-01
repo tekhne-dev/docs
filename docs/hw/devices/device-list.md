@@ -1,13 +1,13 @@
 ---
-title: Device List
+title: Cihaz Listesi
 summary:
-  List of devices supported or intended to be supported by Asahi Linux
+  Asahi Linux tarafından desteklenen veya desteklenmesi planlanan cihazların listesi
 ---
 
-This is a list of devices Asahi Linux intends to support. The Product and SoC are used for matching against device trees. Please check [Feature Support](../../platform/feature-support/overview.md) for the state of support for specific models.
+Bu, Asahi Linux'un desteklemeyi planladığı cihazların listesidir. Ürün ve SoC, aygıt ağaçlarıyla eşleştirme için kullanılır. Belirli modellerin destek durumunu öğrenmek için lütfen [Özellik Desteği](../../platform/feature-support/overview.md) bölümünü kontrol edin.
 
-## Devices
-| Marketing name | Device | Product | SoC |
+## Cihazlar
+| Pazarlama adı | Cihaz | Ürün | SoC |
 | -------------- | ------ | ------- | --- |
 | Mac mini (M1, 2020) | Macmini9,1 | J274AP | T8103
 | MacBook Pro (13-inch, M1, 2020) | MacBookPro17,1 | J293AP | T8103
