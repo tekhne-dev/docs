@@ -1,14 +1,14 @@
 ---
-title: Camera and Image Signal Processor
+title: Kamera ve Görsel Sinyal İşlemcisi (ISP)
 ---
 
 
-# ISP 
-This information is based on Macbook Pro M1 2020 ISP. It may differ for other devices.
+# ISP  
+Bu bilgiler Macbook Pro M1 2020 ISP'sine dayanmaktadır. Diğer cihazlarda farklılık gösterebilir.
 
-## Sensor Type -> ISP Version 
+## Sensör Türü -> ISP Sürümü 
 
-| Sensor Type | ISP Version |
+| Sensor Tipi | ISP Sürümü |
 |---	|---	|
 | 0xee | 0xf |
 | 0x54 | 0xb |
@@ -47,15 +47,16 @@ This information is based on Macbook Pro M1 2020 ISP. It may differ for other de
 | 0x19 | 0xb |
 | 0x1c | 0xf |
 | 0x1d | 0xf |
-## Registers 
 
-- ISP registers (regs[0]): Depending on chip revision different registers are used.
+## Kayıtlar
 
-| Register Name | ISP Version | ISP Revision? | Offset | Notes |
+- ISP kayıtları (regs[0]): Çip revizyonuna bağlı olarak farklı kayıtlar kullanılır.
+
+| Kayıt Adı | ISP Sürümü | ISP Revizyonu? | Offset | Notlar |
 |---	|---	|---	|---	|---	|
-| ISP_REVISION | 0xF | N/A | 0x1800000 | 31:0 bits are used.<br/> ([31:0] == 0x1) => 0x15a <br/> ([31:0] != 0x1001) => 0x15b |
-|  | 0xC | N/A | 0x1800000 | 31:0 bits are used.<br/> ([31:0] == 0x90) => 0x14a <br/> ([31:0] != 0x1090) => 0x14b <br/> ([31:0] == 0x3091) => 0x14c |
-|  | 0xB | N/A | 0x1800000 | 31:0 bits are used.<br/> ([31:0] == 0x90) => 0x13a <br/> ([31:0] != 0x3091) => 0x13c |
+| ISP_REVISION | 0xF | N/A | 0x1800000 | 31:0 bitler kullanılır.<br/> ([31:0] == 0x1) => 0x15a <br/> ([31:0] != 0x1001) => 0x15b |
+|  | 0xC | N/A | 0x1800000 | 31:0 bitler kullanılır.<br/> ([31:0] == 0x90) => 0x14a <br/> ([31:0] != 0x1090) => 0x14b <br/> ([31:0] == 0x3091) => 0x14c |
+|  | 0xB | N/A | 0x1800000 | 31:0 bitler kullanılır.<br/> ([31:0] == 0x90) => 0x13a <br/> ([31:0] != 0x3091) => 0x13c |
 |---	|---	|---	|---	|---	|
 | SENSOR_REF_CLOCK0 | 0xF  	| != 0x15b | 0x24c41f0 | Sensor Ref Clock 0 |
 |  | 0xF  	| == 0x15b | 0x24c41f4 | Sensor Ref Clock 0 |
@@ -77,9 +78,9 @@ This information is based on Macbook Pro M1 2020 ISP. It may differ for other de
 |  | 0xC  	| != 0x14c | 0x24c41dc | Sensor Ref Clock 3 |
 |  | 0xC  	| == 0x14c | 0x210419c | Sensor Ref Clock 3 |
 |---	|---	|---	|---	|---	|
-| POWER_ON? | 0xF | * | 0x24a0080 | Set to 0x1 during power on |
-| POWER_ON? | 0xC | != 0x14c | 0x24a0080 | Set to 0x1 during power on |
-| POWER_ON? | Other | * | 0x20e0080 | Set to 0x1 during power on |
+| POWER_ON? | 0xF | * | 0x24a0080 | Cihaz başlangıcında 0x1 olarak ayarlanır |
+| POWER_ON? | 0xC | != 0x14c | 0x24a0080 | Cihaz başlangıcında 0x1 olarak ayarlanır |
+| POWER_ON? | Other | * | 0x20e0080 | Cihaz başlangıcında 0x1 olarak ayarlanır |
 |---	|---	|---	|---	|---	|
 | UNKNOWN0 | 0xF | * | 0x24c41d0 |  |
 |  | 0xC | != 0x14c | 0x24c41b0 |  |
@@ -106,7 +107,7 @@ This information is based on Macbook Pro M1 2020 ISP. It may differ for other de
 |  | 0xC | != 0x14c | 0x24c41cc |  |
 |  | 0xC | * | 0x210418c |  |
 |  | 0xB | * | 0x188 |  |
-| SMBUS_REG_MTXFIFO0 | * | * | 0x2110000 | I2C Channel 0
+| SMBUS_REG_MTXFIFO0 | * | * | 0x2110000 | I2C Kanal 0
 | SMBUS_REG_MRXFIFO0 | * | * | 0x2110004 | 
 | SMBUS_REG_UNKNOWN0_1 | * | * | 0x2110008 |
 | SMBUS_REG_UNKNOWN0_2* | * | * | 0x211000c |
@@ -118,7 +119,7 @@ This information is based on Macbook Pro M1 2020 ISP. It may differ for other de
 | SMBUS_REG_UNKNOWN0_6 | * | * | 0x2110034 |
 | SMBUS_REG_UNKNOWN0_7 | * | * | 0x211003c |
 |---	|---	|---	|---	|---	|
-| SMBUS_REG_MTXFIFO1 | * | * | 0x2111000 | I2C Channel 1
+| SMBUS_REG_MTXFIFO1 | * | * | 0x2111000 | I2C Kanal 1
 | SMBUS_REG_MRXFIFO1 | * | * | 0x2111004 | 
 | SMBUS_REG_UNKNOWN1_1 | * | * | 0x2111008 |
 | SMBUS_REG_UNKNOWN1_2* | * | * | 0x211100c |
@@ -130,7 +131,7 @@ This information is based on Macbook Pro M1 2020 ISP. It may differ for other de
 | SMBUS_REG_UNKNOWN1_6 | * | * | 0x2111034 |
 | SMBUS_REG_UNKNOWN1_7 | * | * | 0x211103c |
 |---	|---	|---	|---	|---	|
-| SMBUS_REG_MTXFIFO2 | * | * | 0x2112000 | I2C Channel 2
+| SMBUS_REG_MTXFIFO2 | * | * | 0x2112000 | I2C Kanal 2
 | SMBUS_REG_MRXFIFO2 | * | * | 0x2112004 | 
 | SMBUS_REG_UNKNOWN2_1 | * | * | 0x2112008 |
 | SMBUS_REG_UNKNOWN2_2* | * | * | 0x211200c |
@@ -142,7 +143,7 @@ This information is based on Macbook Pro M1 2020 ISP. It may differ for other de
 | SMBUS_REG_UNKNOWN2_6 | * | * | 0x2112034 |
 | SMBUS_REG_UNKNOWN2_7 | * | * | 0x211203c |
 |---	|---	|---	|---	|---	|
-| SMBUS_REG_MTXFIFO3 | * | * | 0x2113000 | I2C Channel 3
+| SMBUS_REG_MTXFIFO3 | * | * | 0x2113000 | I2C Kanal 3
 | SMBUS_REG_MRXFIFO3 | * | * | 0x2113004 | 
 | SMBUS_REG_UNKNOWN3_1 | * | * | 0x2113008 |
 | SMBUS_REG_UNKNOWN3_2* | * | * | 0x211300c |
@@ -162,7 +163,7 @@ This information is based on Macbook Pro M1 2020 ISP. It may differ for other de
     - Unknown (offset: 0x1400044)
     - Unknown (offset: 0x1aa801c)
 
-- PS registers (regs[1]): Depending on chip revision different register range is used. Most chip revisions seems to use 0x4000-0x4060
+- PS kayıtları (regs[1]): Çip revizyonuna bağlı olarak farklı kayıt aralığı kullanılır. Çoğu çip revizyonu 0x4000-0x4060 aralığını kullanıyor gibi görünüyor.
     - Unknown (offset: 0x00)
     - Unknown (offset: 0x08)
     - Unknown (offset: 0x10)
@@ -190,26 +191,25 @@ This information is based on Macbook Pro M1 2020 ISP. It may differ for other de
     - Unknown (offset: 0x1c3e8)
     - Unknown (offset: 0x1c400)
     - Unknown (offset: 0x1c418)   
-- SOC SPMI CSR registers (regs[2])
-    - Unknown (offset: 0x80a0) (Initialized as 1 << 2^(1..5))
-    - Unknown (offset: 0x80a4) (Value here seems to be ORed with one of following values: 0x4000000, 0x8000000, 0x1, 0x2)
-    - Unknown (offset: 0x28) (Initialized as 0)
-    - Unknown (offset: 0x90) (Initialized as 1)
-    - Unknown (offset: 0x40) (Initialized as 0x4000000)
+- SOC SPMI CSR kayıtları (regs[2])
+    - Unknown (offset: 0x80a0) (1 << 2^(1..5) olarak başlar)
+    - Unknown (offset: 0x80a4) (Buradaki değere, şu değerlerden biriyle OR işlemi yapılmış gibi görünüyor: 0x4000000, 0x8000000, 0x1, 0x2)
+    - Unknown (offset: 0x28) (0 olarak başlar)
+    - Unknown (offset: 0x90) (1 olarak başlar)
+    - Unknown (offset: 0x40) (0x4000000 olarak başlar)
 
 - SOC SPMI0 registers (regs[3])
-    - Unknown (offset: 0x80a0) (Initialized as 1 << 2^(1..5))
-    - Unknown (offset: 0x80a4) (Value here seems to be ORed with one of following values: 0x4000000, 0x8000000, 0x1, 0x2)
-    - Unknown (offset: 0x28) (Initialized as 0)
-    - Unknown (offset: 0x90) (Initialized as 1)
-    - Unknown (offset: 0x40) (Initialized as 0x4000000)
+    - Unknown (offset: 0x80a0) (1 << 2^(1..5) olarak başlar)
+    - Unknown (offset: 0x80a4) (Buradaki değere, şu değerlerden biriyle OR işlemi yapılmış gibi görünüyor: 0x4000000, 0x8000000, 0x1, 0x2)
+    - Unknown (offset: 0x28) (0 olarak başlar)
+    - Unknown (offset: 0x90) (1 olarak başlar)
+    - Unknown (offset: 0x40) (0x4000000 olarak başlar)
 
 - SOC SPMI1 registers (regs[4])
-    - Unknown (offset: 0x80a0) (Initialized as 1 << 2^(1..5))
-    - Unknown (offset: 0x80a4) (Value here seems to be ORed with one of following values: 0x4000000, 0x8000000, 0x1, 0x2)
-    - Unknown (offset: 0x28) (Initialized as 0)
-    - Unknown (offset: 0x90) (Initialized as 1)
-    - Unknown (offset: 0x40) (Initialized as 0x4000000)
-
+    - Unknown (offset: 0x80a0) (1 << 2^(1..5) olarak başlar)
+    - Unknown (offset: 0x80a4) (Buradaki değere, şu değerlerden biriyle OR işlemi yapılmış gibi görünüyor: 0x4000000, 0x8000000, 0x1, 0x2)
+    - Unknown (offset: 0x28) (0 olarak başlar)
+    - Unknown (offset: 0x90) (1 olarak başlar)
+    - Unknown (offset: 0x40) (0x4000000 olarak başlar)
 
 
