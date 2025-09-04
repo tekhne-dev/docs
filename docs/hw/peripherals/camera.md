@@ -6,7 +6,7 @@ title: Kamera ve Görsel Sinyal İşlemcisi (ISP)
 # ISP  
 Bu bilgiler Macbook Pro M1 2020 ISP'sine dayanmaktadır. Diğer cihazlarda farklılık gösterebilir.
 
-## Sensör Türü -> ISP Sürümü 
+## Sensör Tipi -> ISP Sürümü 
 
 | Sensor Tipi | ISP Sürümü |
 |---	|---	|
