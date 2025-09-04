@@ -1,8 +1,8 @@
 ---
-title: Keyboard Backlight Controller
+title: Klavye Arka Işığı Denetleyicisi
 ---
 
-On the MacBook Pro, the keyboard backlight shows up in the ADT as:
+MacBook Pro'da klavye arka ışığı ADT'de şu şekilde görünür:
 
 ```
 fpwm {
@@ -18,20 +18,20 @@ fpwm {
 }
 ```
 
-That suggests that there's a PWM at 0x235044000, enabled by the clock gate at 0x23b7001e0, which controls the keyboard backlight. That does appear to be the case :-)
+Bu, 0x235044000 adresinde, 0x23b7001e0 adresindeki saat kapısı tarafından etkinleştirilen ve klavye arka ışığını kontrol eden bir PWM olduğunu gösteriyor. Durum gerçekten de öyle görünüyor :-)
 
-Registers, as far as I've figured them out:
+Anladığım kadarıyla kayıtlar şöyle:
 
 ```
-+0x00: write 0x4239 to enable or after counter values changed
-+0x04: unknown, no effect
-+0x08: status bits: bit 0x01 is set when the light comes on, 0x02 is set when the light comes off. Write-to-clear.
-+0x0c: unknown, no effect
-+0x18: off period, in 24 MHz ticks
-+0x1c: on period, in 24 MHz ticks
++0x00: etkinleştirmek veya sayaç değerleri değiştiğinde 0x4239 yazar
++0x04: bilinmiyor, etkisi yok
++0x08: durum bitleri: ışık yandığında 0x01 biti, ışık söndüğünde 0x02 biti ayarlanır. Yazarak silinir.
++0x0c: bilinmiyor, etkisi yok
++0x18: kapalı süre, 24 MHz tiklerde
++0x1c: açık süre, 24 MHz tiklerde
 ```
 
-So a complete m1n1 sequence to make the keyboard backlight flash in an annoying and possibly seizure-inducing way is:
+Örneğin klavye arka ışığının rahatsız edici ve muhtemelen epilepsi nöbetine neden olabilecek şekilde yanıp sönmesini sağlayacak tam bir m1n1 dizisi şöyledir:
 
 ```
 >>> write32(0x23b7001e0, 0xf)
@@ -40,7 +40,7 @@ So a complete m1n1 sequence to make the keyboard backlight flash in an annoying 
 >>> write32(0x235044000, 0x4239)
 ```
 
-changing the frequency while keeping a 50% duty cycle:
+%50 görev döngüsünü koruyarak frekansı değiştirme:
 
 ```
 >>> write32(0x235044018, 4000)
@@ -48,4 +48,4 @@ changing the frequency while keeping a 50% duty cycle:
 >>> write32(0x235044000, 0x4239)
 ```
 
-PR at https://github.com/AsahiLinux/linux/pull/5
+PR https://github.com/AsahiLinux/linux/pull/5 adresinde
