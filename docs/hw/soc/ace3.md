@@ -2,32 +2,32 @@
 title: ACE3
 ---
 
-ACE3 is the new USB-C / USB-PD controller in M3 products. It has a sn201202x compatible value in the ADT.
+ACE3, M3 ürünlerinde bulunan yeni USB-C / USB-PD denetleyicisidir. ADT'de sn201202x uyumlu bir değere sahiptir.
 
-## SPMI transport
+## SPMI aktarımı
 
-Unlike its predecessors, the ACE3 is accessed via SPMI rather than I2C. However the underlying interface hasn't changed, a thin transport layer allows accessing what were previously I2C registers (which we'll refer to as "logical registers") through the SPMI registers.
+Önceki modellerden farklı olarak, ACE3'e I2C yerine SPMI üzerinden erişilir. Ancak temel arayüz değişmemiştir. İnce bir aktarım katmanı, daha önce I2C kayıtları olan (buna “lojik kayıtlar” diyeceğiz) kayıtlara SPMI kayıtları üzerinden erişilmesini sağlar.
 
-- **0x00 (logical register address) [RW]:** writing `0x80 | logical_register_address` to this SPMI register will start a logical register selection process, updating the SPMI registers below. Once the selection has finished, the MSB will be cleared. 
+- **0x00 (logical register address) [RW]:** Bu SPMI kaydına `0x80 | logical_register_address` yazmak, lojik kayıt seçim sürecini başlatarak aşağıdaki SPMI kayıtlarını günceller. Seçim tamamlandığında, MSB silinir.
 
-  Note 1: The "register 0 write" SPMI command can also be used, because the 7-bit value is completed with MSB=1 and will therefore trigger a logical register selection.  
-  Note 2: Writes with MSB=0 will update the register's value, but won't select a new register.
+  Not 1: “register 0 write” SPMI komutu da kullanılabilir, çünkü 7 bitlik değer MSB=1 ile tamamlanır ve bu nedenle lojik kayıt seçimi tetiklenir.  
+  Not 2: MSB=0 ile yazma işlemleri kaydın değerini günceller, ancak yeni bir kayıt seçmez.
 
-- **0x1F (logical register size) [RO]:** when a logical register is selected, its size in bytes is written here.
+- **0x1F (logical register size) [RO]:** bir lojik kayıt seçildiğinde, boyutu bit halinde buraya yazılır.
 
-- **0x20..0x5F (logical register data) [RW]:** when a logical register is selected, its data is read, zero-padded and written here. Writes anywhere in this area cause the area's contents to be written (truncated as appropriate) to the last selected logical register.
+- **0x20..0x5F (logical register data) [RW]:** bir lojik kayıt seçildiğinde, verileri okunur, sıfırlarla doldurulur ve buraya yazılır. Bu alandaki herhangi bir yere yazma işlemi, alanın içeriğinin (uygun şekilde kesilerek) son seçilen lojik kayda yazılmasına neden olur.
 
-  Note 1: There doesn't seem to be a way to monitor the completion of a logical register write, but it seems to block further selections.  
-  Note 2: There doesn't seem to be a way to hold off the logical register write until later, so only logical registers of size ≤ 16 can be written atomically.
+  Not 1: Lojik kayıt yazma işleminin tamamlanmasını takip etmenin bir yolu yok gibi görünse de, daha sonraki seçimleri engellediği anlaşılıyor.
+  Not 2: Lojik kayıt yazma işlemini daha sonraya ertelemek için bir yol bulunmadığından, yalnızca ≤ 16 boyutundaki lojik kayıtlar atomik olarak yazılabilir.
 
-Other observations:
+Diğer gözlemler:
 
-- Only the first 0x60 addresses are mapped, but address bits 7 and higher seem to be ignored, causing the block to be aliased every 0x80 bytes. Many consecutive SPMI registers can be accessed at once using extended (or extended long) commands.
+- Yalnızca ilk 0x60 adresleri eşlenir, ancak adres bitleri 7 ve üstü göz ardı edilir gibi görünür ve bu da bloğun her 0x80 baytta bir takma adla adlandırılmasına neden olur. Genişletilmiş (veya genişletilmiş uzun) komutlar kullanılarak birçok ardışık SPMI kaydına aynı anda erişilebilir.
 
-- The device also supports sleep and wakeup commands, and it's sleeping at boot. When sleeping, writes are ACKed but ignored. It takes some time for the device to wake up after receiving the command.
+- Cihaz ayrıca uyku ve uyandırma komutlarını da destekler ve önyükleme sırasında uyku modundadır. Uyku modundayken, yazma işlemleri tanınır ancak yok sayılır. Cihazın komutu aldıktan sonra uyanması biraz zaman alır.
 
-- Interrupts are no longer delivered through a GPIO pin, but through the SPMI controller's interrupt functionality. (I don't know how this works at the bus level, maybe interrupts are triggered via a master write command?)
+- Kesintiler artık GPIO pini üzerinden değil, SPMI denetleyicisinin kesinti işlevi üzerinden iletilir. (Bunun veri yolu düzeyinde nasıl çalıştığını bilmiyorum. Belki de kesintiler bir ana yazma komutu aracılığıyla tetikleniyordur.)
 
-- For some reason, each device seems to have two SPMI slaves (one listening at the address in the ADT, and one at the next). Each slave holds its own selection, and sending sleep/wakeup commands to either of them reflects in both... except that the second slave seems to ignore sleep commands.
+- Nedense, her cihazın iki SPMI bağımlısı var gibi görünüyor (biri ADT'deki adreste, diğeri bir sonraki adreste dinliyor). Her bağımlı kendi seçimini korur ve ikisinden birine uyku/uyandırma komutları gönderildiğinde, bu komutlar her ikisinde de yansıtılır. Ancak ikinci bağımlı uyku komutlarını yok sayıyor gibi görünüyor.
 
-These observations were made on a J516c, SN2012024 HW00A1 FW002.062.00.
+Bu gözlemler J516c, SN2012024 HW00A1 FW002.062.00 üzerinde yapılmıştır.
